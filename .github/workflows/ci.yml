@@ -37,6 +37,6 @@ jobs:
 
       - name: Deploy to Firebase
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           FIREBASE_CLI_EXPERIMENTS: webframeworks
         run: firebase deploy --only hosting   # 自動デプロイステップを追加
