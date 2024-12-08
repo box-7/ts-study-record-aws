@@ -23,3 +23,11 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Build project
+        run: npm run build  # ビルドステップを追加
+
+      - name: Deploy to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  # Firebase トークンをシークレットから取得
+        run: firebase deploy --only hosting  # 自動デプロイステップを追加
