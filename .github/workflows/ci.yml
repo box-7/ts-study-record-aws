@@ -30,7 +30,10 @@ jobs:
       - name: Install Firebase CLI  # Firebase CLI をインストールするステップを追加
         run: npm install -g firebase-tools
 
-      - name: Deploy to Firebase
+      - name: Set up Firebase authentication  # Firebase 認証の設定
+        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > $HOME/service-account.json
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # サービスアカウントキーを使用
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
+
+      - name: Deploy to Firebase
         run: firebase deploy --only hosting  # 自動デプロイステップを追加
