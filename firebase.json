@@ -1,14 +1,14 @@
 {
-  "hosting": {
-    "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "frameworksBackend": {
-      "use": "webframeworks",
-      "region": "asia-east1"
-    }
-  }
-}
+        "hosting": {
+          "source": ".",
+          "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+          ],
+          "frameworksBackend": {
+            "use": "webframeworks",
+            "region": "asia-east1"
+          }
+        }
+      }
