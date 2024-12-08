@@ -36,4 +36,4 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
 
       - name: Deploy to Firebase
-        run: firebase deploy --only hosting  # 自動デプロイステップを追加
+        run: firebase deploy  # 自動デプロイステップを追加
