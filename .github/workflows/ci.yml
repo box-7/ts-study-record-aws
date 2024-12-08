@@ -32,5 +32,5 @@ jobs:
 
       - name: Deploy to Firebase
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  # Firebase トークンをシークレットから取得
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # サービスアカウントキーを使用
         run: firebase deploy --only hosting  # 自動デプロイステップを追加
