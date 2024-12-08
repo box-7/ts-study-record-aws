@@ -16,7 +16,10 @@
           "noEmit": true,
           "jsx": "react-jsx",
           "types": ["node", "jest", "@testing-library/jest-dom"],
-          "allowImportingTsExtensions": true  // この行を追加
+          "allowImportingTsExtensions": true,  // この行を追加
+          "paths": {
+                "@/*": ["./src/*"]
+              }
         },
         "include": ["src"],
       }

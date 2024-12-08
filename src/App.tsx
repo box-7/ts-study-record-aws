@@ -2,12 +2,18 @@ import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
+import { Button } from "@/components/ui/button"
+import { HStack } from "@chakra-ui/react"
 
 function App() {
   return (
     <>
-      <h1>Hello World</h1>
-      <h2>Hello World 7!</h2>
+      {/* <h1>Hello World</h1> */}
+      {/* <h2>Hello World 7!</h2> */}
+        <HStack>
+                <Button>Click me</Button>
+                <Button>Click me</Button>
+        </HStack>
     </>
   );
 }
