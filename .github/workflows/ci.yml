@@ -35,8 +35,12 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
 
+      - name: Check GOOGLE_APPLICATION_CREDENTIALS  # デバッグ情報の追加
+        run: cat $HOME/service-account.json
+
       - name: Deploy to Firebase
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          # GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/service-account.json
           FIREBASE_CLI_EXPERIMENTS: webframeworks
         run: firebase deploy --only hosting   # 自動デプロイステップを追加
