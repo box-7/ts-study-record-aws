@@ -1,17 +1,25 @@
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 // import './App.css'
 import supabase from './utils/supabase';
 import { useEffect } from 'react';
 
+// データの型を定義
+interface StudyRecord {
+        id: string; // UUID型のフィールド
+        title: string;
+        time: number;
+      }
+
+      
 function App() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<StudyRecord[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       const { data } = await supabase.from('study-record').select('*');
-      setData(data);
+      setData(data || []);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -34,14 +42,15 @@ function App() {
   useEffect(() => {
     if (data) {
       const calculatedTotalTime = data.reduce(
-        (acc, record) => acc + parseInt(record.time),
+        // (acc, record) => acc + parseInt(record.time),
+        (acc, record) => acc + record.time,
         0
       );
       setTotalTime(calculatedTotalTime);
     }
   }, [data]);
 
-  const addTodo = async (title, time) => {
+  const addTodo = async (title: string, time: number) => {
     const { data, error } = await supabase
       .from('study-record')
       .insert([{ title: title, time: time }])
@@ -54,29 +63,36 @@ function App() {
     return data;
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       await supabase.from('study-record').delete().eq('id', id);
       // const { data } = await supabase.from("study-record").select("*");
       // // console.log("data",data);
       // setData(data);
       fetchData();
+//     } catch (error) {
+//       alert(error.message);
+//     }
     } catch (error) {
-      alert(error.message);
-    }
+        if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert('An unknown error occurred');
+        }
+      }
   };
 
   const [studyContent, setStudyContent] = useState('');
   const [studyHour, setStudyHour] = useState(0);
   const [error, setError] = useState('');
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setStudyContent(e.target.value);
   };
-  const handleChangeHour = (e) => {
-    setStudyHour(e.target.value);
+  const handleChangeHour = (e: ChangeEvent<HTMLInputElement>) => {
+    setStudyHour(Number(e.target.value));
   };
   const onClickSetRecord = async () => {
-    if (studyContent === '' || studyHour === '') {
+    if (studyContent === '' || studyHour === 0) {
       setError('入力されていない項目があります');
       return;
     }
