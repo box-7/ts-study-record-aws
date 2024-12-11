@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
+import { useForm } from "react-hook-form"
+
 // データの型を定義
 interface StudyRecord {
         id: string; // UUID型のフィールド
@@ -120,7 +122,10 @@ function App() {
                 const value = e.target.value;
                 setStudyHour(value === '' ? null : Number(value));
         };
-        const onClickSetRecord = async () => {
+        const onClickSetRecord = async (data) => {
+                console.log("studyContent", data['study-content'] );
+                const studyContent = data['study-content'];
+                const studyHour = data['study-number'];
                 if (studyContent === '' || studyHour === null) {
                         setError('入力されていない項目があります');
                         return;
@@ -136,6 +141,15 @@ function App() {
                 setStudyContent('');
                 setStudyHour(null);
         };
+
+        const {
+                register,
+                handleSubmit,
+                formState: { errors },
+        } = useForm()
+        // const onSubmit = (data) => onClickSetRecord(data.study-content, data.study-hour)
+        // const onSubmit = (data) => console.log(data)
+        const onSubmit = ((data) => onClickSetRecord(data))
         return (
                 <>
                         <Center h="100vh">
@@ -153,10 +167,6 @@ function App() {
                                                                 <h1>学習記録一覧!</h1>
                                                                 <DialogRoot placement={"center"}>
                                                                         <DialogTrigger asChild>
-                                                                                {/* <Button variant="outline" size="sm">
-                                                                        Open Dialog
-                                                                </Button> */}
-                                                                                {/* <button data-testid="add-record" onClick={onClickSetRecord}> */}
                                                                                 <button>
                                                                                         登録
                                                                                 </button>
@@ -167,7 +177,47 @@ function App() {
                                                                                 </DialogHeader>
                                                                                 <DialogBody>
                                                                                         <p>
-                                                                                                <p>
+                                                                                                {/* 最初の onSubmit:
+                                                                                                <form onSubmit={handleSubmit(onSubmit)}> の onSubmit は、HTML の form 要素の onSubmit イベントハンドラ属性です。
+                                                                                                この onSubmit は、フォームが送信されたときに実行される関数を指定します。
+                                                                                                二番目の onSubmit:
+                                                                                                handleSubmit(onSubmit) の onSubmit は、ユーザーが定義した関数です。この関数は、フォームのデータを処理するために使用されます。
+                                                                                                この onSubmit 関数は、フォームのバリデーションが成功した後に呼び出されます。 */}
+                                                                                                        <form onSubmit={handleSubmit(onSubmit, errors)}>
+                                                                                                                <p>
+                                                                                                                        <label htmlFor="study-content">学習内容</label>
+                                                                                                                        <input
+                                                                                                                                data-testid="study-content"
+                                                                                                                                id="study-content"
+                                                                                                                                type="text"
+                                                                                                                                {...register("study-content", {
+                                                                                                                                        required: "必須です",
+                                                                                                                                        // maxLength: 30
+                                                                                                                                })}
+                                                                                                                        />
+                                                                                                                </p>
+                                                                                                                <p>
+                                                                                                                        <label htmlFor="study-content">学習時間</label>
+                                                                                                                        <input
+                                                                                                                                data-testid="study-hour"
+                                                                                                                                id="study-hour"
+                                                                                                                                type="number"
+                                                                                                                                {...register("study-number", { required: true, maxLength: 30 })}
+                                                                                                                        />
+                                                                                                                </p>
+                                                                                                                <DialogFooter>
+                                                                                                                        <DialogActionTrigger asChild>
+                                                                                                                                <Button variant="outline" onClick={onClickCancelRecord} >Cancel</Button>
+                                                                                                                        </DialogActionTrigger>
+                                                                                                                        <DialogActionTrigger asChild>
+                                                                                                                                {/* <Button data-testid="add-record" onClick={onClickSetRecord} >Save</Button> */}
+                                                                                                                                <Button data-testid="add-record" type="submit" >Save</Button>
+                                                                                                                        </DialogActionTrigger>
+                                                                                                                </DialogFooter>
+                                                                                                        </form>
+
+                                                                                        </p>
+                                                                                        {/* <p>
                                                                                                         <label htmlFor="study-content">学習内容</label>
                                                                                                         <input
                                                                                                                 data-testid="study-content"
@@ -187,19 +237,19 @@ function App() {
                                                                                                                 value={studyHour !== null ? studyHour : ''}
                                                                                                                 onChange={handleChangeHour}
                                                                                                         />
-                                                                                                </p>
-                                                                                        </p>
+                                                                                                </p> */}
+
                                                                                 </DialogBody>
-                                                                                <DialogFooter>
+                                                                                {/* <DialogFooter>
                                                                                         <DialogActionTrigger asChild>
                                                                                                 <Button variant="outline" onClick={onClickCancelRecord} >Cancel</Button>
                                                                                         </DialogActionTrigger>
                                                                                         <DialogActionTrigger asChild>
                                                                                                 <Button data-testid="add-record" onClick={onClickSetRecord} >Save</Button>
                                                                                         </DialogActionTrigger>
-                                                                                </DialogFooter>
-                                                                                <DialogCloseTrigger  onClick={onClickCancelRecord} />
-                                                                                {error && <div>{error}</div>}
+                                                                                </DialogFooter> */}
+                                                                                <DialogCloseTrigger onClick={onClickCancelRecord} />
+                                                                                {/* {error && <div>{error}</div>} */}
                                                                         </DialogContent>
                                                                 </DialogRoot>
 
