@@ -14,8 +14,8 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from './components/ui/dialog';
-// } from '@/components/ui/dialog'; なぜか@だとダメ
+// } from './components/ui/dialog';
+} from '@/components/ui/dialog'; //なぜか@だとダメ
 import { Button } from '@/components/ui/button';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
