@@ -10,18 +10,21 @@
 // });
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import App from '../App';
 
 describe('title', () => {
-  it('should render title', () => {
+  it('should render title', async () => {
     render(
       <ChakraProvider value={defaultSystem}>
         <App />
       </ChakraProvider>
     );
-    expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
+    // 非同期処理が完了するまで待機
+    await waitFor(() => {
+      expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
+    });
   });
 });
 
