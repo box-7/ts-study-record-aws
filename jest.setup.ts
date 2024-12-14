@@ -8,18 +8,24 @@ require('dotenv').config();
 // require("dotenv").config();
 
 // じんさんslack追加分
-global.structuredClone = (val) => {
-  return JSON.parse(JSON.stringify(val));
-};
+// global.structuredClone = (val) => {
+//   return JSON.parse(JSON.stringify(val));
+// };
 
 //  じんさんqiita追加分
-if (!global.structuredClone) {
-  global.structuredClone = function structuredClone(objectToClone: any) {
-    const stringified = JSON.stringify(objectToClone);
-    const parsed = JSON.parse(stringified);
-    return parsed;
-  };
-}
+global.structuredClone = (obj) => {
+        if (obj === undefined) return undefined;
+        return JSON.parse(JSON.stringify(obj));
+      };
+
+
+// if (!global.structuredClone) {
+//   global.structuredClone = function structuredClone(objectToClone: any) {
+//     const stringified = JSON.stringify(objectToClone);
+//     const parsed = JSON.parse(stringified);
+//     return parsed;
+//   };
+// }
 
 
 // import '@testing-library/jest-dom';
