@@ -3,7 +3,7 @@ import { useState, ChangeEvent } from 'react';
 import supabase from './utils/supabase';
 import { useEffect } from 'react';
 import { Record } from './domain/record';
-import { Spinner, Text, VStack, Center, Box, Flex } from "@chakra-ui/react"
+import { Spinner, Text, VStack, Center, Box, Flex } from '@chakra-ui/react';
 import {
         DialogActionTrigger,
         DialogBody,
@@ -14,10 +14,11 @@ import {
         DialogRoot,
         DialogTitle,
         DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-import { useForm } from "react-hook-form"
+// import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 // データの型を定義
 interface StudyRecord {
@@ -26,11 +27,17 @@ interface StudyRecord {
         time: number;
 }
 
+interface FormValues {
+        'studyContent': string;
+        'studyHour': number | null;
+}
+
 
 function App() {
         const [data, setData] = useState<StudyRecord[]>([]);
         const [totalTime, setTotalTime] = useState(0);
         const [isLoading, setIsLoading] = useState(true);
+        const [formError, setFormError] = useState<string | null>(null);
 
         const fetchData = async () => {
                 try {
@@ -38,13 +45,13 @@ function App() {
                         //       setData(data || []);
                         //       setIsLoading(false);
                         if (data) {
-                                // 取得したデータを Record クラスのインスタンスに変換
-                                const records = data.map((item: Partial<Record>) => new Record(
-                                        item.id || '',
-                                        item.title || '',
-                                        item.time || 0
-                                ));
-                                setData(records);
+                                // デフォルト値の設定:
+                                // const records = data.map(
+                                //         (item: Partial<Record>) =>
+                                //                 new Record(item.id || '', item.title || '', item.time || 0)
+                                // );
+                                // setData(records);
+                                setData(data);
                         } else {
                                 setData([]);
                         }
@@ -52,7 +59,6 @@ function App() {
                         // setTimeout(() => {
                         //         setIsLoading(false);
                         // }, 3000); // 3秒間ローディングを表示
-
                 } catch (error) {
                         console.error('Error fetching data:', error);
                 }
@@ -83,8 +89,9 @@ function App() {
         }, [data]);
 
         const addTodo = async (title: string, time: number) => {
+                console.log("title", title);
+                console.log("time", time);
                 const newRecord = new Record('', title, time);
-
                 const { data, error } = await supabase
                         .from('study-record')
                         .insert([{ title: newRecord.title, time: newRecord.time }])
@@ -92,11 +99,10 @@ function App() {
                 if (error) {
                         throw error;
                 }
-                fetchData(); // データを再取得して状態を更新
-                // console.log("addTodo data",data);
-                return data;
+                fetchData();
+                console.log("data", data);
+                // return data; //
         };
-
         const handleDelete = async (id: string) => {
                 try {
                         await supabase.from('study-record').delete().eq('id', id);
@@ -109,47 +115,55 @@ function App() {
                         }
                 }
         };
-
-        const [studyContent, setStudyContent] = useState('');
-        const [studyHour, setStudyHour] = useState<number | null>(null);
-        const [error, setError] = useState('');
-        const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-                setStudyContent(e.target.value);
+        const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<FormValues>();
+        const onClickCancelRecord = () => {
+                reset({
+                        studyContent: '',
+                        studyHour: null,
+                });
         };
-        const handleChangeHour = (e: ChangeEvent<HTMLInputElement>) => {
-                // setStudyHour(Number(e.target.value));
-                // setStudyHour(e.target.value);
-                const value = e.target.value;
-                setStudyHour(value === '' ? null : Number(value));
-        };
-        const onClickSetRecord = async (data) => {
-                console.log("studyContent", data['study-content'] );
-                const studyContent = data['study-content'];
-                const studyHour = data['study-number'];
-                if (studyContent === '' || studyHour === null) {
-                        setError('入力されていない項目があります');
-                        return;
+        const onSubmit: SubmitHandler<FormValues> = async (data) => {
+                const studyContent = data.studyContent;
+                const studyHour = data.studyHour;
+                console.log("studyContent", studyContent);
+                console.log("studyHour", studyHour);
+                if (studyHour === null || isNaN(studyHour)) {
+                        // setFormError('学習時間は有効な数値である必要があります');
+                        return studyContent && studyHour;
                 }
-                setError('');
-                await addTodo(studyContent, studyHour);
-                // 非同期なので、ここだとうまくいかない
-                // fetchData();
-                setStudyContent('');
-                setStudyHour(null);
+                await addTodo(studyContent, studyHour); // onSubmitに対してreturn文は必要なさそう
+                reset({
+                        studyContent: '',
+                        studyHour: null,
+                });
         };
-        const onClickCancelRecord = async () => {
-                setStudyContent('');
-                setStudyHour(null);
+        const handleDialogSubmit = async (event: React.FormEvent) => {
+                console.log("handleDialogSubmit");
+                event.preventDefault();
+                const result = await handleSubmit(onSubmit)(event);
+
+                if (Object.keys(errors).length === 0) {
+                        // バリデーションが成功した場合のみダイアログを閉じる
+                        closeDialog();
+                } else {
+                        // バリデーションエラーがある場合にエラーメッセージを設定
+                        setFormError('入力にエラーがあります。すべてのフィールドを正しく入力してください。');
+                        console.log('Validation errors:', errors);
+                }
         };
 
-        const {
-                register,
-                handleSubmit,
-                formState: { errors },
-        } = useForm()
-        // const onSubmit = (data) => onClickSetRecord(data.study-content, data.study-hour)
-        // const onSubmit = (data) => console.log(data)
-        const onSubmit = ((data) => onClickSetRecord(data))
+        const closeDialog = () => {
+                // ダイアログを閉じる処理をここに追加
+                console.log('Dialog closed');
+        };
+
+        //                 const [inputValue, setInputValue] = useState('');
+
+        const studyHour = watch('studyHour', null);
+        //   const handleChange = (event) => {
+        //     setInputValue(event.target.value);
+        //     console.log('入力が変更されました:', event.target.value);
+        //   };
         return (
                 <>
                         <Center h="100vh">
@@ -165,79 +179,103 @@ function App() {
                                                 ) : data && data.length > 0 ? (
                                                         <>
                                                                 <h1>学習記録一覧!</h1>
-                                                                <DialogRoot placement={"center"}>
+                                                                <DialogRoot placement={'center'}>
                                                                         <DialogTrigger asChild>
-                                                                                <button>
-                                                                                        登録
-                                                                                </button>
+                                                                                <button>登録</button>
                                                                         </DialogTrigger>
                                                                         <DialogContent>
                                                                                 <DialogHeader>
                                                                                         <DialogTitle>学習記録登録</DialogTitle>
                                                                                 </DialogHeader>
                                                                                 <DialogBody>
-                                                                                        <p>
-                                                                                                {/* 最初の onSubmit:
-                                                                                                <form onSubmit={handleSubmit(onSubmit)}> の onSubmit は、HTML の form 要素の onSubmit イベントハンドラ属性です。
-                                                                                                この onSubmit は、フォームが送信されたときに実行される関数を指定します。
-                                                                                                二番目の onSubmit:
-                                                                                                handleSubmit(onSubmit) の onSubmit は、ユーザーが定義した関数です。この関数は、フォームのデータを処理するために使用されます。
-                                                                                                この onSubmit 関数は、フォームのバリデーションが成功した後に呼び出されます。 */}
-                                                                                                        <form onSubmit={handleSubmit(onSubmit, errors)}>
-                                                                                                                <p>
-                                                                                                                        <label htmlFor="study-content">学習内容</label>
-                                                                                                                        <input
-                                                                                                                                data-testid="study-content"
-                                                                                                                                id="study-content"
-                                                                                                                                type="text"
-                                                                                                                                {...register("study-content", {
-                                                                                                                                        required: "必須です",
-                                                                                                                                        // maxLength: 30
-                                                                                                                                })}
-                                                                                                                        />
-                                                                                                                </p>
-                                                                                                                <p>
-                                                                                                                        <label htmlFor="study-content">学習時間</label>
-                                                                                                                        <input
-                                                                                                                                data-testid="study-hour"
-                                                                                                                                id="study-hour"
-                                                                                                                                type="number"
-                                                                                                                                {...register("study-number", { required: true, maxLength: 30 })}
-                                                                                                                        />
-                                                                                                                </p>
-                                                                                                                <DialogFooter>
-                                                                                                                        <DialogActionTrigger asChild>
-                                                                                                                                <Button variant="outline" onClick={onClickCancelRecord} >Cancel</Button>
-                                                                                                                        </DialogActionTrigger>
-                                                                                                                        <DialogActionTrigger asChild>
-                                                                                                                                {/* <Button data-testid="add-record" onClick={onClickSetRecord} >Save</Button> */}
-                                                                                                                                <Button data-testid="add-record" type="submit" >Save</Button>
-                                                                                                                        </DialogActionTrigger>
-                                                                                                                </DialogFooter>
-                                                                                                        </form>
+                                                                                        <div>
+                                                                                                {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
+                                                                                                handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
+                                                                                                二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
+                                                                                                {/* <form onSubmit={handleSubmit(onSubmit)}> */}
+                                                                                                <form onSubmit={handleDialogSubmit}>
+                                                                                                        <div>
+                                                                                                                <label htmlFor="studyContent">学習内容</label>
+                                                                                                                <input
+                                                                                                                        id="studyContent"
+                                                                                                                        type="text"
+                                                                                                                        // value={inputValue} 
+                                                                                                                        // onChange={handleChange}
+                                                                                                                        {...register('studyContent', {
+                                                                                                                                required: '内容の入力は必須です',
+                                                                                                                        })}
+                                                                                                                />
+                                                                                                                {errors['studyContent'] && (
+                                                                                                                        <p>{errors['studyContent'].message}</p>
+                                                                                                                )}
+                                                                                                        </div>
 
-                                                                                        </p>
-                                                                                        {/* <p>
-                                                                                                        <label htmlFor="study-content">学習内容</label>
-                                                                                                        <input
-                                                                                                                data-testid="study-content"
-                                                                                                                id="study-content"
-                                                                                                                type="text"
-                                                                                                                value={studyContent}
-                                                                                                                onChange={handleChange}
-                                                                                                        />
-                                                                                                </p>
-                                                                                                <p>
-                                                                                                        <label htmlFor="study-hour">学習時間</label>
-                                                                                                        <input
-                                                                                                                data-testid="study-hour"
-                                                                                                                id="study-hour"
-                                                                                                                type="number"
-                                                                                                                // value={studyHour}
-                                                                                                                value={studyHour !== null ? studyHour : ''}
-                                                                                                                onChange={handleChangeHour}
-                                                                                                        />
-                                                                                                </p> */}
+                                                                                                        <div>
+                                                                                                                <label htmlFor="studyHour">学習時間</label>
+                                                                                                                <input
+                                                                                                                        id="studyHour"
+                                                                                                                        type="number"
+                                                                                                                        {...register('studyHour', {
+                                                                                                                                required: '時間の入力は必須です',
+                                                                                                                                min: {
+                                                                                                                                        value: 0,
+                                                                                                                                        message: '時間は0以上である必要があります',
+                                                                                                                                },
+                                                                                                                        })}
+                                                                                                                />
+                                                                                                                {errors['studyHour'] && (
+                                                                                                                        <p>{errors['studyHour'].message}</p>
+                                                                                                                )}
+                                                                                                        </div>
+
+                                                                                                        <div>
+                                                                                                                <h2>入力された学習時間: {studyHour} 時間</h2>
+
+
+                                                                                                                {studyHour ? (
+                                                                                                                        <DialogActionTrigger asChild>
+                                                                                                                                <button type="submit">Save</button>
+                                                                                                                        </DialogActionTrigger>
+                                                                                                                ) :
+                                                                                                                        (
+                                                                                                                                <DialogActionTrigger asChild>
+                                                                                                                                        <button type="submit" disabled={true}>Save</button>
+                                                                                                                                </DialogActionTrigger>
+                                                                                                                        )
+
+                                                                                                                }
+                                                                                                                {/* {errors['studyContent'] || errors['studyHour'] ? (
+                                                                                                                        // <DialogActionTrigger asChild>
+                                                                                                                                <button type="submit" disabled={true}>Save</button>
+                                                                                                                        // </DialogActionTrigger>
+                                                                                                                ) :
+                                                                                                                        // <DialogActionTrigger asChild>
+                                                                                                                                <button type="submit">Save</button>
+                                                                                                                        // </DialogActionTrigger>
+                                                                                                                } */}
+
+
+                                                                                                                {/* 
+                                                                                                                <DialogActionTrigger asChild>
+                                                                                                                        <button type="submit" disabled={true}>Save</button>
+                                                                                                                </DialogActionTrigger> */}
+                                                                                                                <DialogActionTrigger asChild>
+                                                                                                                        <Button
+                                                                                                                                // type="button"
+                                                                                                                                // onClick={() => console.log('Cancel')}
+                                                                                                                                // variant="outline"
+                                                                                                                                onClick={onClickCancelRecord}
+                                                                                                                        >
+                                                                                                                                Cancel
+                                                                                                                        </Button>
+                                                                                                                </DialogActionTrigger>
+                                                                                                        </div>
+
+
+
+
+                                                                                                </form>
+                                                                                        </div>
 
                                                                                 </DialogBody>
                                                                                 {/* <DialogFooter>
@@ -252,7 +290,6 @@ function App() {
                                                                                 {/* {error && <div>{error}</div>} */}
                                                                         </DialogContent>
                                                                 </DialogRoot>
-
 
                                                                 <div>
                                                                         {data.map((record) => (
@@ -280,3 +317,72 @@ function App() {
 }
 
 export default App;
+// {/* <p>
+//                 <label htmlFor="study-content">学習内容</label>
+//                 <input
+//                         data-testid="study-content"
+//                         id="study-content"
+//                         type="text"
+//                         value={studyContent}
+//                         onChange={handleChange}
+//                 />
+//         </p>
+//         <p>
+//                 <label htmlFor="study-hour">学習時間</label>
+//                 <input
+//                         data-testid="study-hour"
+//                         id="study-hour"
+//                         type="number"
+//                         // value={studyHour}
+//                         value={studyHour !== null ? studyHour : ''}
+//                         onChange={handleChangeHour}
+//                 />
+//         </p> */}
+// <form onSubmit={handleSubmit(onSubmit)}>
+// <p>
+//         <label htmlFor="study-content">学習内容</label>
+//         <input
+//                 data-testid="study-content"
+//                 id="study-content"
+//                 type="text"
+//                 {...register("study-content", {
+//                         required: true,
+//                         // maxLength: 30
+//                 })}
+//         />
+//         {/* <p>{errors["study-content"]?,message}</p> */}
+//         {errors["study-content"] && <span>This field is required</span>}
+// </p>
+
+// {/* <p>{errors["study-content"]?.message}</p> */}
+// <p>
+//         <label htmlFor="study-hour">学習時間</label>
+//         <input
+//                 data-testid="study-hour"
+//                 id="study-hour"
+//                 type="number"
+//                 {...register("study-number", { required: true, maxLength: 30 })}
+//         />
+// </p>
+// <DialogFooter>
+//         <DialogActionTrigger asChild>
+//                 <Button variant="outline" onClick={onClickCancelRecord} >Cancel</Button>
+//         </DialogActionTrigger>
+//         <DialogActionTrigger asChild>
+//                 {/* <Button data-testid="add-record" onClick={onClickSetRecord} >Save</Button> */}
+//                 <Button data-testid="add-record" type="submit" >Save</Button>
+//         </DialogActionTrigger>
+// </DialogFooter>
+// </form>
+
+// <form onSubmit={handleSubmit(onSubmit)}>
+// {/* register your input into the hook by invoking the "register" function */}
+// <input defaultValue="test" {...register("example")} />
+
+// {/* include validation with required or other standard HTML validation rules */}
+// <input {...register("exampleRequired", { required: true })} />
+// {/* errors will return when field validation fails  */}
+// {errors.exampleRequired && <span>This field is required</span>}
+
+// <input type="submit" />
+// </form>
