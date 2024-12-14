@@ -1,28 +1,29 @@
-import App from '../App';
-import { render, screen } from '@testing-library/react';
-
-describe('title', () => {
-  it('should render title', () => {
-    render(<App />);
-    expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
-  });
-});
-
-// import React from 'react';
+// import App from '../App';
 // import { render, screen } from '@testing-library/react';
 // import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
-// import App from '../App';
 
 // describe('title', () => {
 //   it('should render title', () => {
-//     render(
-//       <ChakraProvider value={defaultSystem}>
-//         <App />
-//       </ChakraProvider>
-//     );
+//     render(<App />);
 //     expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
 //   });
 // });
+
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import App from '../App';
+
+describe('title', () => {
+  it('should render title', () => {
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <App />
+      </ChakraProvider>
+    );
+    expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
+  });
+});
 
 // import App from '../App';
 // import { render, screen } from '@testing-library/react';
