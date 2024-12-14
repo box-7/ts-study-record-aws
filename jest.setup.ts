@@ -1,12 +1,18 @@
 import '@testing-library/jest-dom';
 import 'dotenv/config';
 
+
+global.structuredClone = (val) => {
+        return JSON.parse(JSON.stringify(val));
+      };
+
+
 // structuredClone のポリフィル
-if (typeof global.structuredClone === 'undefined') {
-  global.structuredClone = (value: any) => {
-    return JSON.parse(JSON.stringify(value));
-  };
-}
+// if (typeof global.structuredClone === 'undefined') {
+//   global.structuredClone = (value: any) => {
+//     return JSON.parse(JSON.stringify(value));
+//   };
+// }
 
 // import '@testing-library/jest-dom';
 // import 'core-js/actual/structured-clone';
