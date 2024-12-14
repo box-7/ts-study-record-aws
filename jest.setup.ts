@@ -1,18 +1,42 @@
+//元
 import '@testing-library/jest-dom';
-import 'dotenv/config';
 
+require('dotenv').config();
 
+// import "@testing-library/jest-dom";
+
+// require("dotenv").config();
+
+// じんさんslack追加分
 global.structuredClone = (val) => {
-        return JSON.parse(JSON.stringify(val));
-      };
+  return JSON.parse(JSON.stringify(val));
+};
 
-      if(!global.structuredClone){
-        global.structuredClone = function structuredClone(objectToClone: any) {
-              const stringified = JSON.stringify(objectToClone);
-              const parsed = JSON.parse(stringified);
-              return parsed;
-            }
-    }
+//  じんさんqiita追加分
+if (!global.structuredClone) {
+  global.structuredClone = function structuredClone(objectToClone: any) {
+    const stringified = JSON.stringify(objectToClone);
+    const parsed = JSON.parse(stringified);
+    return parsed;
+  };
+}
+
+
+// import '@testing-library/jest-dom';
+// import 'dotenv/config';
+
+
+// global.structuredClone = (val) => {
+//         return JSON.parse(JSON.stringify(val));
+//       };
+
+//       if(!global.structuredClone){
+//         global.structuredClone = function structuredClone(objectToClone: any) {
+//               const stringified = JSON.stringify(objectToClone);
+//               const parsed = JSON.parse(stringified);
+//               return parsed;
+//             }
+//     }
 
 // structuredClone のポリフィル
 // if (typeof global.structuredClone === 'undefined') {
