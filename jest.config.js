@@ -1,3 +1,7 @@
+// jest.config.js
+// Jest テストランナーの設定ファイルで、Jest がどのようにテストを実行するかを制御
+// このファイルを使用して、テスト環境、トランスフォーマー、モジュールの解決方法、テストの実行方法などを設定
+
 export default {
         preset: "ts-jest",
         testEnvironment: "jsdom",
@@ -28,11 +32,6 @@ export default {
 // import MyComponent from './src/components/MyComponent';
 // エイリアスを使用したインポート
 // import MyComponent from '@/components/MyComponent';
-
-
-// jest.config.js
-// Jest テストランナーの設定ファイルで、Jest がどのようにテストを実行するかを制御
-// このファイルを使用して、テスト環境、トランスフォーマー、モジュールの解決方法、テストの実行方法などを設定
 
 // preset:
 // Jest のプリセットを指定する。例: ts-jest（TypeScript を使用する場合）。
