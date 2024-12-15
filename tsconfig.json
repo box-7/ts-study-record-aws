@@ -41,48 +41,49 @@
 // files:
 // コンパイル対象の特定のファイルを指定する。
 
-//   compilerOptions の各オプションの解説
-//   target: "ESNext"
-//   コンパイルされたJavaScriptのターゲットバージョンを指定します。ESNext は最新のECMAScript標準をターゲットにします。
-//   useDefineForClassFields: true
-//   クラスフィールドの初期化に define プロパティを使用します。これにより、クラスフィールドがより標準に準拠した方法で定義されます。
-//   lib: ["DOM", "DOM.Iterable", "ESNext"]
-//   プロジェクトで使用するライブラリを指定します。DOM と DOM.Iterable はブラウザ環境のAPIを含み、ESNext は最新のECMAScript標準を含みます。
-//   module: "ESNext"
-//   モジュールシステムを指定します。ESNext は最新のECMAScriptモジュールシステムを使用します。
-//   skipLibCheck: true
-//   ライブラリファイル（node_modules 内の型定義ファイル）の型チェックをスキップします。これにより、コンパイル時間が短縮されます。
-//   allowJs: false
-//   JavaScriptファイルのコンパイルを許可しません。TypeScriptファイルのみをコンパイル対象とします。
-//   moduleResolution: "Bundler"
-//   モジュール解決戦略を指定します。Bundler はバンドラー（WebpackやRollup）と同じ方法でモジュールを解決します。
-//   allowImportingTsExtensions: true
-//   TypeScriptファイルのインポート時に拡張子を含めることを許可します。
-//   isolatedModules: true
-//   各ファイルを独立したモジュールとして扱います。これにより、TypeScriptのトランスパイルが簡素化されます。
-//   noEmit: true
-//   コンパイル時に出力ファイルを生成しません。型チェックのみを行います。
-//   jsx: "react-jsx"
-//   JSXの構文をReactのJSXトランスフォーマーに変換します。
-//   strict: true
-//   TypeScriptの厳格な型チェックオプションを有効にします。これには、noImplicitAny や strictNullChecks などが含まれます。
-//   allowSyntheticDefaultImports: true
-//   デフォルトエクスポートがないモジュールでも、デフォルトインポートを許可します。
-//   esModuleInterop: false
-//   ESモジュールとCommonJSモジュールの互換性を向上させるオプションです。false に設定されていますが、true にすると、import と require の互換性が向上します。
-//   forceConsistentCasingInFileNames: true
-//   ファイル名の大文字小文字の一貫性を強制します。これにより、異なる大文字小文字のファイル名によるエラーを防ぎます。
-//   resolveJsonModule: true
-//   JSONファイルをモジュールとしてインポートすることを許可します。
-//   types: ["node", "jest", "@testing-library/jest-dom"]
-//   プロジェクトで使用する型定義ファイルを指定します。node、jest、および @testing-library/jest-dom の型定義が含まれています。
-//   baseUrl: "."
-//   モジュール解決の基準となるディレクトリを指定します。"." はプロジェクトのルートディレクトリを指します。
-//   paths: { "@/": ["./src/"] }
-//   モジュール解決のエイリアスを指定します。@/ を src にマッピングします。これにより、@/components のようなインポートが可能になります。
-//   include の解説
-//   include: ["src"]
-//   コンパイル対象のファイルを含むディレクトリを指定します。この場合、src ディレクトリ内のファイルがコンパイル対象となります。
+// compilerOptions の各オプションの解説
+// target: "ESNext"
+// コンパイルされたJavaScriptのターゲットバージョンを指定する。ESNext は最新のECMAScript標準をターゲットにする。
+// useDefineForClassFields: true
+// クラスフィールドの初期化に define プロパティを使用する。これにより、クラスフィールドがより標準に準拠した方法で定義される。
+// lib: ["DOM", "DOM.Iterable", "ESNext"]
+// プロジェクトで使用するライブラリを指定する。DOM と DOM.Iterable はブラウザ環境のAPIを含み、ESNext は最新のECMAScript標準を含む。
+// module: "ESNext"
+// モジュールシステムを指定する。ESNext は最新のECMAScriptモジュールシステムを使用する。
+// skipLibCheck: true
+// ライブラリファイル（node_modules 内の型定義ファイル）の型チェックをスキップする。これにより、コンパイル時間が短縮される。
+// allowJs: false
+// JavaScriptファイルのコンパイルを許可しない。TypeScriptファイルのみをコンパイル対象とする。
+// moduleResolution: "Bundler"
+// モジュール解決戦略を指定する。Bundler はバンドラー（WebpackやRollup）と同じ方法でモジュールを解決する。
+// allowImportingTsExtensions: true
+// TypeScriptファイルのインポート時に拡張子を含めることを許可する。
+// isolatedModules: true
+// 各ファイルを独立したモジュールとして扱う。これにより、TypeScriptのトランスパイルが簡素化される。
+// noEmit: true
+// コンパイル時に出力ファイルを生成しない。型チェックのみを行う。
+// jsx: "react-jsx"
+// JSXの構文をReactのJSXトランスフォーマーに変換する。
+// strict: true
+// TypeScriptの厳格な型チェックオプションを有効にする。これには、noImplicitAny や strictNullChecks などが含まれる。
+// allowSyntheticDefaultImports: true
+// デフォルトエクスポートがないモジュールでも、デフォルトインポートを許可する。
+// esModuleInterop: false
+// ESモジュールとCommonJSモジュールの互換性を向上させるオプション。false に設定されているが、true にすると、import と require の互換性が向上する。
+// forceConsistentCasingInFileNames: true
+// ファイル名の大文字小文字の一貫性を強制する。これにより、異なる大文字小文字のファイル名によるエラーを防ぐ。
+// resolveJsonModule: true
+// JSONファイルをモジュールとしてインポートすることを許可する。
+// types: ["node", "jest", "@testing-library/jest-dom"]
+// プロジェクトで使用する型定義ファイルを指定する。node、jest、および @testing-library/jest-dom の型定義が含まれている。
+// baseUrl: "."
+// モジュール解決の基準となるディレクトリを指定する。"." はプロジェクトのルートディレクトリを指す。
+// paths: { "@/": ["./src/"] }
+// モジュール解決のエイリアスを指定する。@/ を src にマッピングする。これにより、@/components のようなインポートが可能になる。
+
+// include の解説
+// include: ["src"]
+// コンパイル対象のファイルを含むディレクトリを指定する。この場合、src ディレクトリ内のファイルがコンパイル対象となる。
 
 
 // コメントアウトされたオプションの解説

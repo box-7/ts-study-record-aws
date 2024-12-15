@@ -17,8 +17,9 @@ require('dotenv').config();
 // 深いコピーとは、オブジェクトのすべてのプロパティとそのネストされたオブジェクトを再帰的にコピーすることを意味する
 // これにより、元のオブジェクトとコピーされたオブジェクトが完全に独立した状態になる
 global.structuredClone = (obj) => {
-  console.log("jest.setup.ts", obj);
-  if (obj === undefined) return undefined;
+//   console.log("jest.setup.ts", obj);
+// if (obj === undefined) console.log("jest.setup.ts", obj);
+if (obj === undefined) return undefined;
   return JSON.parse(JSON.stringify(obj));
 };
 
