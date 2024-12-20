@@ -158,7 +158,7 @@ function App() {
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>学習記録登録</DialogTitle>
+                      <DialogTitle>新規登録</DialogTitle>
                     </DialogHeader>
                     <DialogBody>
                       <div>
@@ -205,7 +205,7 @@ function App() {
                                 <button type="submit"  data-testid="submit">Save</button>
                               </DialogActionTrigger>
                             ) : (
-                              <button type="submit" >Save</button>
+                              <button type="submit" data-testid="submit-failure">Save</button>
                             )}
 
                             <DialogActionTrigger asChild>

@@ -65,7 +65,7 @@ describe('ローディング・コンポーネント', () => {
 
                 // ダイアログが表示されるのを待つ
                 await waitFor(() => {
-                        const dialogTitle = screen.getByText('学習記録登録');
+                        const dialogTitle = screen.getByText('新規登録');
                         expect(dialogTitle).toBeInTheDocument();
                 });
 
@@ -97,18 +97,92 @@ describe('ローディング・コンポーネント', () => {
                         expect(studyContentHour).toBeInTheDocument();
                 });
         });
+
+        test('モーダルが新規登録というタイトルになっている', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+                const registerButton = await waitFor(() => screen.getByTestId('registration'));
+                await userEvent.click(registerButton);
+                await waitFor(() => {
+                        const dialogTitle = screen.getByText('新規登録');
+                        expect(dialogTitle).toBeInTheDocument();
+                });
+        });
+
+
+        test('学習内容がないときに登録するとエラーが出る', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+
+                const registerButton = await waitFor(() => screen.getByTestId('registration'));
+                await userEvent.click(registerButton);
+
+                // ダイアログが表示されるのを待つ
+                await waitFor(() => {
+                        const dialogTitle = screen.getByText('新規登録');
+                        expect(dialogTitle).toBeInTheDocument();
+                });
+
+                // Saveボタンが有効になるのを待つ
+                const submitButton = await waitFor(() => screen.getByTestId('submit-failure'));
+                expect(submitButton).not.toBeDisabled();
+                await userEvent.click(submitButton);
+
+                // 結果が表示されるのを待つ
+                await waitFor(() => {
+                        const studyContentError = screen.getByText('内容の入力は必須です');
+                        const studyHourError = screen.getByText('時間の入力は必須です');
+                        expect(studyContentError && studyHourError).toBeInTheDocument();
+                });
+        });
+
+        test('学習内容がないときに登録するとエラーが出る 未入力エラー、0未満エラー', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+
+                const registerButton = await waitFor(() => screen.getByTestId('registration'));
+                await userEvent.click(registerButton);
+
+                await waitFor(() => {
+                        const dialogTitle = screen.getByText('新規登録');
+                        expect(dialogTitle).toBeInTheDocument();
+                });
+
+                // const studyContentInput = screen.getByLabelText('学習内容') as HTMLInputElement;
+                const studyHourInput = screen.getByLabelText('学習時間') as HTMLInputElement;
+                // await userEvent.type(studyContentInput, '');
+                await userEvent.type(studyHourInput, '-1');
+
+                await waitFor(() => {
+                        // 入力フィールドの値をアサート
+                        // expect(studyContentInput).toHaveValue('');
+                        expect(studyHourInput).toHaveValue(-1);
+                });
+
+                // Saveボタンが有効になるのを待つ
+                const submitButton = await waitFor(() => screen.getByTestId('submit-failure'));
+                expect(submitButton).not.toBeDisabled();
+                await userEvent.click(submitButton);
+
+                // 結果が表示されるのを待つ
+                await waitFor(() => {
+                        const studyContentError = screen.getByText('内容の入力は必須です');
+                        const studyHourError = screen.getByText('時間は0以上である必要があります');
+                        expect(studyContentError && studyHourError).toBeInTheDocument();
+                });
+        });
+
 });
 
-// await waitFor(() => {
-//         // const studyContentInput = screen.getByRole('studyContent');
-//         const studyContentInput = screen.getByRole('textbox', { name: /学習内容/i });
-//         // const studyHourInput = screen.getByRole('studyHour');
-//         // userEvent.type(studyContentInput, 'Math');
-//         // userEvent.type(studyHourInput, '2');
-// });
 
-// screen.debug();
-// console.log(container.innerHTML);
 
-// const studyContentInput = screen.getByRole('textbox', { name: /学習内容/i });
-// const studyHourInput = screen.getByLabelText('学習時間');
+
