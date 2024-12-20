@@ -4,7 +4,8 @@
 
 export default {
         preset: "ts-jest",
-        testEnvironment: "jsdom",
+        // testEnvironment: "jsdom",
+        testEnvironment: "jest-environment-jsdom",
         setupFilesAfterEnv: ["./jest.setup.ts"],
         transform: {
                 "^.+\\.(ts|tsx)$": "ts-jest", // TypeScript ファイルをトランスパイルするための設定

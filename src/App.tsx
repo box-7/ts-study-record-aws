@@ -14,7 +14,7 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-// } from './components/ui/dialog';
+  // } from './components/ui/dialog';
 } from '@/components/ui/dialog'; //なぜか@だとダメ
 import { Button } from '@/components/ui/button';
 
@@ -133,6 +133,8 @@ function App() {
   const studyContent = watch('studyContent', '');
   const studyHour = watch('studyHour', null);
 
+    // studyHour の型をコンソールに出力
+//     console.log("typeof studyHour",typeof studyHour); // これは 'string' になるはずです
   return (
     <>
       <Center h="100vh">
@@ -140,7 +142,11 @@ function App() {
           <div>
             {isLoading ? (
               <VStack colorPalette="teal">
-                <Spinner color="colorPalette.600" size="xl" />
+                <Spinner
+                  color="colorPalette.600"
+                  size="xl"
+                  role="spinnerStatus"
+                />
                 <Text color="colorPalette.600">Loading...</Text>
               </VStack>
             ) : data && data.length > 0 ? (
@@ -148,7 +154,7 @@ function App() {
                 <h1>学習記録一覧!</h1>
                 <DialogRoot placement={'center'}>
                   <DialogTrigger asChild>
-                    <button>登録</button>
+                    <button data-testid="registration">登録</button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
@@ -157,8 +163,8 @@ function App() {
                     <DialogBody>
                       <div>
                         {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
-                                                                                                handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
-                                                                                                二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
+                                handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
+                                二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
                         <form onSubmit={handleSubmit(onSubmit)}>
                           <div>
                             <label htmlFor="studyContent">学習内容</label>
@@ -193,12 +199,13 @@ function App() {
                           </div>
 
                           <div>
+
                             {studyContent && studyHour && studyHour >= 0 ? (
                               <DialogActionTrigger asChild>
-                                <button type="submit">Save</button>
+                                <button type="submit"  data-testid="submit">Save</button>
                               </DialogActionTrigger>
                             ) : (
-                              <button type="submit">Save</button>
+                              <button type="submit" >Save</button>
                             )}
 
                             <DialogActionTrigger asChild>
@@ -213,20 +220,25 @@ function App() {
                     <DialogCloseTrigger onClick={onClickCancelRecord} />
                   </DialogContent>
                 </DialogRoot>
-
-                <div>
-                  {data.map((record) => (
-                    <p data-testid="record" key={record.id}>
-                      {record.title} {record.time}時間{' '}
-                      <button
-                        data-testid="delete-button"
-                        onClick={() => handleDelete(record.id)}
-                      >
-                        削除
-                      </button>
-                    </p>
-                  ))}
-                </div>
+                <table>
+                  <tbody>
+                    {data.map((record) => (
+                      <tr key={record.id}>
+                        <td data-testid="study-content-hour">
+                          {record.title} {record.time}時間{' '}
+                        </td>
+                        <td>
+                          <button
+                            data-testid="delete-button"
+                            onClick={() => handleDelete(record.id)}
+                          >
+                            削除
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 <h2>合計時間: {totalTime} / 1000(h)</h2>
               </>
             ) : (
