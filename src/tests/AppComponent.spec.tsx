@@ -1,49 +1,114 @@
-
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import App from '../App';
+import userEvent from '@testing-library/user-event';
 
-describe('title', () => {
-  it('should render title', async () => {
-    render(
-      <ChakraProvider value={defaultSystem}>
-        <App />
-      </ChakraProvider>
-    );
-    // 非同期処理が完了するまで待機
-    await waitFor(() => {
-      expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
-    });
-  });
+describe('ローディング・コンポーネント', () => {
+        it('タイトルをレンダリングする', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+                // 非同期処理が完了するまで待機
+                await waitFor(() => {
+                        expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
+                });
+        });
+        it('isLoadingがtrueのとき、ローディング・スピナーとテキストを表示する', () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+                // スピナーが表示されているか確認
+                expect(screen.getByRole('spinnerStatus')).toBeInTheDocument();
+                // "Loading..." テキストが表示されているか確認
+                expect(screen.getByText('Loading...')).toBeInTheDocument();
+        });
+
+        it('新規登録ボタンがある', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+                await waitFor(() => {
+                        const registerButton = screen.getByRole('button', { name: '登録' });
+                        expect(registerButton).toBeInTheDocument();
+                });
+        });
+
+        it('isLoadingがfalseの場合、データテーブルを表示する', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+                // 非同期処理が完了するまで待機
+                await waitFor(() => {
+                        // テーブルが表示されているか確認
+                        expect(screen.getByRole('table')).toBeInTheDocument();
+                });
+        });
+
+        test('登録できること', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+
+                const registerButton = await waitFor(() => screen.getByTestId('registration'));
+                await userEvent.click(registerButton);
+
+                // ダイアログが表示されるのを待つ
+                await waitFor(() => {
+                        const dialogTitle = screen.getByText('学習記録登録');
+                        expect(dialogTitle).toBeInTheDocument();
+                });
+
+                // 入力フィールドに値を入力
+                const studyContentInput = screen.getByLabelText('学習内容') as HTMLInputElement;
+                const studyHourInput = screen.getByLabelText('学習時間') as HTMLInputElement;
+                await userEvent.type(studyContentInput, 'Math');
+                await userEvent.type(studyHourInput, '2');
+
+                // await waitFor(() => {
+                //         // 入力フィールドの値をアサート
+                //         expect(studyContentInput).toHaveValue('Math');
+                //         expect(studyHourInput).toHaveValue(2);
+                // });
+                // // 現在のDOMの状態を出力してデバッグ
+                // screen.debug();
+
+                // Saveボタンが有効になるのを待つ
+                const submitButton = await waitFor(() => screen.getByTestId('submit'));
+                expect(submitButton).not.toBeDisabled();
+
+                await userEvent.click(submitButton);
+
+                // 結果が表示されるのを待つ
+                await waitFor(() => {
+                        const studyContentHour = screen.getAllByTestId('study-content-hour').find(element =>
+                                element.textContent && element.textContent.includes('Math 2時間')
+                        );
+                        expect(studyContentHour).toBeInTheDocument();
+                });
+        });
 });
 
-// import App from '../App';
-// import { render, screen } from '@testing-library/react';
-// import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
-
-// describe('title', () => {
-//   it('should render title', () => {
-//     render(<App />);
-//     expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
-//   });
+// await waitFor(() => {
+//         // const studyContentInput = screen.getByRole('studyContent');
+//         const studyContentInput = screen.getByRole('textbox', { name: /学習内容/i });
+//         // const studyHourInput = screen.getByRole('studyHour');
+//         // userEvent.type(studyContentInput, 'Math');
+//         // userEvent.type(studyHourInput, '2');
 // });
 
-// import App from '../App';
-// import { render, screen } from '@testing-library/react';
-// import React from 'react';
-// import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+// screen.debug();
+// console.log(container.innerHTML);
 
-// // 必要に応じてテーマをインポート
-// const theme = extendTheme({});
-
-// describe('title', () => {
-//   it('should render title', () => {
-//       render(
-//         <ChakraProvider theme={theme}>
-//       <App />
-//       </ChakraProvider>;
-//       );
-//     expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
-//   });
-// });
+// const studyContentInput = screen.getByRole('textbox', { name: /学習内容/i });
+// const studyHourInput = screen.getByLabelText('学習時間');
