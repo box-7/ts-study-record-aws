@@ -90,6 +90,10 @@ function App() {
   };
   const handleDelete = async (id: string) => {
     try {
+        // eq は、Supabaseのクエリビルダーで使用されるメソッドの一つ
+        // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
+        // eq は "equal" の略で、SQLの = 演算子に相当する
+        console.log('id', id);
       await supabase.from('study-record').delete().eq('id', id);
       fetchData();
     } catch (error) {
@@ -116,8 +120,6 @@ function App() {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const studyContent = data.studyContent;
     const studyHour = data.studyHour;
-    console.log('studyContent', studyContent);
-    console.log('studyHour', studyHour);
     if (studyHour === null || isNaN(studyHour)) {
       // setFormError('学習時間は有効な数値である必要があります');
       return studyContent && studyHour;
@@ -133,8 +135,6 @@ function App() {
   const studyContent = watch('studyContent', '');
   const studyHour = watch('studyHour', null);
 
-    // studyHour の型をコンソールに出力
-//     console.log("typeof studyHour",typeof studyHour); // これは 'string' になるはずです
   return (
     <>
       <Center h="100vh">
@@ -225,7 +225,7 @@ function App() {
                     {data.map((record) => (
                       <tr key={record.id}>
                         <td data-testid="study-content-hour">
-                          {record.title} {record.time}時間{' '}
+                          {record.title} {record.time}時間
                         </td>
                         <td>
                           <button
