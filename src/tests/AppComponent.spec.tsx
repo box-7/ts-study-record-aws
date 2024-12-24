@@ -8,56 +8,40 @@ import supabase from '@/utils/supabase';
 const mockData = [{ id: 1, title: 'Testtest', time: 3 }];
 jest.mock('@/utils/supabase', () => {
         return {
-         // __esModule: true は、モジュールがESモジュールとして扱われる
-          __esModule: true,
-        //   default プロパティは、デフォルトエクスポートをモックするために使用
-          default: {
-        //defaultの代わりに使える
-        // createClient: jest.fn(() => ({
-            from: jest.fn(() => ({
-              select: jest.fn().mockResolvedValue({ data: mockData, error: null }),
-              insert: jest.fn().mockResolvedValue({ error: null }),
-        //       delete: jest.fn(() => ({
-        //         eq: jest.fn().mockResolvedValue({ error: null })
-        //       }))
-            }))
-          }
+                __esModule: true,
+                default: {
+                        from: jest.fn(() => ({
+                                select: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+                                insert: jest.fn().mockResolvedValue({ error: null }),
+                        }))
+                }
         };
-      });
+});
 
 
 describe('テスト', () => {
 
         test('削除ができること', async () => {
-                // await act(async () => {
-                        render(
-                                <ChakraProvider value={defaultSystem}>
-                                        <App />
-                                </ChakraProvider>
-                        );
-                // });
-                // ダイアログが表示されるのを待つ
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+
                 await waitFor(() => {
                         const dialogTitle = screen.getByText('登録');
                         expect(dialogTitle).toBeInTheDocument();
                 });
 
-                // データの取得をテスト
                 await supabase.from('study-record').select('*');
                 screen.debug();
-                // const studyContentHour = await waitFor(() => screen.getByTestId('study-content-hour'));
                 expect(screen.getByText(/Testtest\s*3\s*時間/)).toBeInTheDocument();
 
-                // const deleteButtons = await waitFor(() => screen.getAllByTestId('delete-button'));
-
-                // await act(async () => {
-                //         await userEvent.click(deleteButtons[0]);
-                // });
-
-
-                // screen.debug();
-
-
+                const deleteButtons = await waitFor(() => screen.getAllByTestId('delete-button'));
+                await act(async () => {
+                        await userEvent.click(deleteButtons[0]);
+                });
+                screen.debug();
         });
 });
 
