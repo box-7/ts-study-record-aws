@@ -2,7 +2,6 @@ import { useState, ChangeEvent } from 'react';
 // import './App.css'
 import supabase from './utils/supabase';
 import { useEffect } from 'react';
-import { Record } from './domain/record';
 import { Spinner, Text, VStack, Center, Box, Flex } from '@chakra-ui/react';
 import {
   DialogActionTrigger,
@@ -19,13 +18,14 @@ import {
 import { Button } from '@/components/ui/button';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
-
+import { Record } from './domain/record';
+import { GetAllRecords } from './lib/record';
 // データの型を定義
-interface StudyRecord {
-  id: string; // UUID型のフィールド
-  title: string;
-  time: number;
-}
+// interface StudyRecord {
+//   id: string; // UUID型のフィールド
+//   title: string;
+//   time: number;
+// }
 
 interface FormValues {
   studyContent: string;
@@ -33,23 +33,23 @@ interface FormValues {
 }
 
 function App() {
-  const [data, setData] = useState<StudyRecord[]>([]);
+//   const [data, setData] = useState<StudyRecord[]>([]);
+  const [data, setData] = useState<Record[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+//   const fetchData = fetchData();
 
   const fetchData = async () => {
-    try {
-      const { data } = await supabase.from('study-record').select('*');
-      if (data) {
-        setData(data);
-      } else {
-        setData([]);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+        const getAllRecordMethod = async () => {
+                // supabaseを対応
+                const todoRecord = await GetAllRecords();
+                setData(todoRecord);
+                setIsLoading(false);
+        }
+
+        getAllRecordMethod();
   };
+
 
   useEffect(() => {
     fetchData();
