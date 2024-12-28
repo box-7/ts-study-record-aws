@@ -89,11 +89,11 @@ function App() {
     fetchData();
   };
   const handleDelete = async (id: string) => {
+        console.log(`handleDeleteを通過 id: ${id}`)
     try {
         // eq は、Supabaseのクエリビルダーで使用されるメソッドの一つ
         // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
         // eq は "equal" の略で、SQLの = 演算子に相当する
-        console.log('id', id);
       await supabase.from('study-record').delete().eq('id', id);
       fetchData();
     } catch (error) {
@@ -229,7 +229,8 @@ function App() {
                         </td>
                         <td>
                           <button
-                            data-testid="delete-button"
+                        //     data-testid="delete-button"
+                            data-testid={`delete-button-${record.id}`}
                             onClick={() => handleDelete(record.id)}
                           >
                             削除
