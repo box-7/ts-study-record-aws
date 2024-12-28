@@ -5,6 +5,7 @@
 export default {
         preset: "ts-jest",
         // testEnvironment: "jsdom",
+        setupFiles: ["dotenv/config"], 
         testEnvironment: "jest-environment-jsdom",
         setupFilesAfterEnv: ["./jest.setup.ts"],
         transform: {
