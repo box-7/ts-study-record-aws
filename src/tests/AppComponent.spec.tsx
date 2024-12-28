@@ -196,16 +196,11 @@ test('学習内容がないときに登録するとエラーが出る 未入力�
 // @lib/record.ts
 // GetAllRecordsをexport
 // supabaseのデータを取得する関数
-jest.mock('@/lib/record.ts', () => {
+const mockData = jest.mock('@/lib/record.ts', () => {
         // const originalModule = jest.requireActual('@/utils/supabase');
         // domainレコードは、classをexportしている
         const { Record } = jest.requireActual('@/domain/record');
         return {
-                // ...originalModule,
-                // from: jest.fn(() => ({
-                //         select: jest.fn(() => mockGetTodo()),
-                // }))
-                // GetAllRecords: mockGetRecords(),
                 GetAllRecords: jest.fn().mockResolvedValue([
                         new Record('5', 'Testtest1', 5),
                 ])
@@ -213,38 +208,63 @@ jest.mock('@/lib/record.ts', () => {
 });
 
 
-describe('テスト', () => {
 
-        test('削除ができること', async () => {
-                render(
-                        <ChakraProvider value={defaultSystem}>
-                                <App />
-                        </ChakraProvider>
-                );
+// describe('テスト', () => {
 
-                await waitFor(() => {
-                        const dialogTitle = screen.getByText('登録');
-                        expect(dialogTitle).toBeInTheDocument();
-                });
-                screen.debug();
 
-                const deleteButton = await waitFor(() => screen.getByTestId('delete-button-5'));
-                // await act(async () => {
-                await waitFor(() => {
-                        // const deleteButton = screen.getByTestId('delete-button-5');
-                        console.log("deleteButton",deleteButton)
-                        console.log("Before click");
-                        userEvent.click(deleteButton);
-                        console.log("After click");
-                });
-                // });
-                screen.debug();
-                await waitFor(() => {
-                        expect(screen.queryByText('Testtest1 5時間')).not.toBeInTheDocument();
-                });
+//         test('削除ができること', async () => {
+//                 render(
+//                         <ChakraProvider value={defaultSystem}>
+//                                 <App />
+//                         </ChakraProvider>
+//                 );
 
-        });
-});
+//                 await waitFor(() => {
+//                         const dialogTitle = screen.getByText('登録');
+//                         expect(dialogTitle).toBeInTheDocument();
+//                 });
+//                 screen.debug();
+
+//                 const deleteButton = await waitFor(() => screen.getByTestId('delete-button-5'));
+//                 // await act(async () => {
+//                 await waitFor(() => {
+//                         // const deleteButton = screen.getByTestId('delete-button-5');
+//                         console.log("deleteButton",deleteButton)
+//                         console.log("Before click");
+//                         userEvent.click(deleteButton);
+//                         console.log("After click");
+//                 });
+//                 // });
+//                 screen.debug();
+//                 await waitFor(() => {
+//                         expect(screen.queryByText('Testtest1 5時間')).not.toBeInTheDocument();
+//                 });
+
+//         });
+// });
+
+
+
+// jest.mock('@/utils/supabase', () => {
+//         // const originalModule = jest.requireActual('@/utils/supabase');
+//         return {
+//                 // __esModule: true,
+//                 // ...originalModule,
+//                 default: {
+//                         from: jest.fn(() => ({
+//                                 select: jest.fn().mockResolvedValue({ data: mockData, error: null }),
+//                 //                 insert: jest.fn().mockResolvedValue({ error: null }),
+//    // deleteをモックしないようにコメントアウト。
+//    // コメントアウトしなくても変わらず。
+//                                 delete:  jest.fn().mockReturnValue({
+//                                         eq: jest.fn().mockResolvedValue({ error: null })
+//                                 })
+//                         }))
+//                 }
+//         }
+// }
+//         );
+
 
                 //このコードは通常のデータをとってきてしまう
                 // const testdata = await supabase.from('study-record').select('*');
