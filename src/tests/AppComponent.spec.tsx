@@ -5,47 +5,6 @@ import App from '../App';
 import userEvent from '@testing-library/user-event';
 import supabase from '@/utils/supabase';
 
-const mockData = [{ id: 1, title: 'Testtest', time: 3 }];
-jest.mock('@/utils/supabase', () => {
-        return {
-                __esModule: true,
-                default: {
-                        from: jest.fn(() => ({
-                                select: jest.fn().mockResolvedValue({ data: mockData, error: null }),
-                                insert: jest.fn().mockResolvedValue({ error: null }),
-                        }))
-                }
-        };
-});
-
-
-describe('テスト', () => {
-
-        test('削除ができること', async () => {
-                render(
-                        <ChakraProvider value={defaultSystem}>
-                                <App />
-                        </ChakraProvider>
-                );
-
-                await waitFor(() => {
-                        const dialogTitle = screen.getByText('登録');
-                        expect(dialogTitle).toBeInTheDocument();
-                });
-
-                await supabase.from('study-record').select('*');
-                screen.debug();
-                expect(screen.getByText(/Testtest\s*3\s*時間/)).toBeInTheDocument();
-
-                const deleteButtons = await waitFor(() => screen.getAllByTestId('delete-button'));
-                await act(async () => {
-                        await userEvent.click(deleteButtons[0]);
-                });
-                screen.debug();
-        });
-});
-
-
 
 it('タイトルをレンダリングする', async () => {
         render(
@@ -154,7 +113,6 @@ test('モーダルが新規登録というタイトルになっている', async
         });
 });
 
-
 test('学習内容がないときに登録するとエラーが出る', async () => {
         render(
                 <ChakraProvider value={defaultSystem}>
@@ -225,6 +183,106 @@ test('学習内容がないときに登録するとエラーが出る 未入力�
 
 
 
+
+// import { Record } from '@/domain/record';
+// const mockGetRecords = jest
+//         .fn()
+//         .mockResolvedValue([
+//                 new Record('1', 'Testtest', 3),
+//                 new Record('2', 'Testtest2', 4),
+//                 // {id:"1", title:"title1", time: 3},
+//         ])
+
+// @lib/record.ts
+// GetAllRecordsをexport
+// supabaseのデータを取得する関数
+jest.mock('@/lib/record.ts', () => {
+        // const originalModule = jest.requireActual('@/utils/supabase');
+        // domainレコードは、classをexportしている
+        const { Record } = jest.requireActual('@/domain/record');
+        return {
+                // ...originalModule,
+                // from: jest.fn(() => ({
+                //         select: jest.fn(() => mockGetTodo()),
+                // }))
+                // GetAllRecords: mockGetRecords(),
+                GetAllRecords: jest.fn().mockResolvedValue([
+                        new Record('5', 'Testtest1', 5),
+                ])
+        };
+});
+
+
+describe('テスト', () => {
+
+        test('削除ができること', async () => {
+                render(
+                        <ChakraProvider value={defaultSystem}>
+                                <App />
+                        </ChakraProvider>
+                );
+
+                await waitFor(() => {
+                        const dialogTitle = screen.getByText('登録');
+                        expect(dialogTitle).toBeInTheDocument();
+                });
+                screen.debug();
+
+                const deleteButton = await waitFor(() => screen.getByTestId('delete-button-5'));
+                // await act(async () => {
+                await waitFor(() => {
+                        // const deleteButton = screen.getByTestId('delete-button-5');
+                        console.log("deleteButton",deleteButton)
+                        console.log("Before click");
+                        userEvent.click(deleteButton);
+                        console.log("After click");
+                });
+                // });
+                screen.debug();
+                await waitFor(() => {
+                        expect(screen.queryByText('Testtest1 5時間')).not.toBeInTheDocument();
+                });
+
+        });
+});
+
+                //このコードは通常のデータをとってきてしまう
+                // const testdata = await supabase.from('study-record').select('*');
+                // console.log("testdata", testdata);
+
+
+// describe('テスト', () => {
+
+//         test('削除ができること', async () => {
+//                 render(
+//                         <ChakraProvider value={defaultSystem}>
+//                                 <App />
+//                         </ChakraProvider>
+//                 );
+//                 screen.debug();
+//                 await waitFor(() => {
+//                         const dialogTitle = screen.getByText('登録');
+//                         expect(dialogTitle).toBeInTheDocument();
+//                 });
+
+//                 await supabase.from('study-record').select('*');
+//                 // console.log("supabase", supabase.from('study-record').select('*'));
+//                 expect(screen.getByText(/Testtest\s*3\s*時間/)).toBeInTheDocument();
+
+//                 const deleteButtons = await waitFor(() => screen.getByTestId('delete-button'));
+//                 // console.log(deleteButtons[0]);
+//                 await act(async () => {
+//                         // await waitFor(() => {
+//                         userEvent.click(deleteButtons);
+//                 });
+//                 // });
+//                 // await supabase.from('study-record').delete().eq('id', 1);
+//                 // await waitFor(() => {
+//                 //         supabase.from('study-record').delete().eq('id', mockData[0].id);
+//                 // });
+
+//                 screen.debug();
+//         });
 // });
 
 
