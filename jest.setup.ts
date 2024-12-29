@@ -13,13 +13,15 @@ import '@testing-library/jest-dom';
 // プロジェクトのルートディレクトリにある .env ファイルを読み込み、その内容を process.env オブジェクトに設定
 require('dotenv').config();
 
+window.alert = jest.fn();
+
 // structuredClone は、JavaScript のオブジェクトを深くコピーするための標準的なメソッド
 // 深いコピーとは、オブジェクトのすべてのプロパティとそのネストされたオブジェクトを再帰的にコピーすることを意味する
 // これにより、元のオブジェクトとコピーされたオブジェクトが完全に独立した状態になる
 global.structuredClone = (obj) => {
-//   console.log("jest.setup.ts", obj);
-// if (obj === undefined) console.log("jest.setup.ts", obj);
-if (obj === undefined) return undefined;
+  //   console.log("jest.setup.ts", obj);
+  // if (obj === undefined) console.log("jest.setup.ts", obj);
+  if (obj === undefined) return undefined;
   return JSON.parse(JSON.stringify(obj));
 };
 
@@ -37,11 +39,6 @@ if (obj === undefined) return undefined;
 // 関数やシンボルはコピーされない
 // 循環参照を含むオブジェクトはエラーが発生する
 // Date オブジェクトや Map、Set などの特殊なオブジェクトは正しくコピーされない
-
-
-
-
-
 
 // import "@testing-library/jest-dom";
 

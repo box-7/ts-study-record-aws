@@ -20,12 +20,7 @@ import { Button } from '@/components/ui/button';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Record } from './domain/record';
 import { GetAllRecords } from './lib/record';
-// データの型を定義
-// interface StudyRecord {
-//   id: string; // UUID型のフィールド
-//   title: string;
-//   time: number;
-// }
+import { RecordDelete } from './lib/record_delete';
 
 interface FormValues {
   studyContent: string;
@@ -33,23 +28,21 @@ interface FormValues {
 }
 
 function App() {
-//   const [data, setData] = useState<StudyRecord[]>([]);
+  //   const [data, setData] = useState<StudyRecord[]>([]);
   const [data, setData] = useState<Record[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-//   const fetchData = fetchData();
+  //   const fetchData = fetchData();
 
   const fetchData = async () => {
-        const getAllRecordMethod = async () => {
-                // supabaseを対応
-                const todoRecord = await GetAllRecords();
-                setData(todoRecord);
-                setIsLoading(false);
-        }
-
-        getAllRecordMethod();
+    const getAllRecordMethod = async () => {
+      // supabaseを対応
+      const todoRecord = await GetAllRecords();
+      setData(todoRecord);
+      setIsLoading(false);
+    };
+    getAllRecordMethod();
   };
-
 
   useEffect(() => {
     fetchData();
@@ -66,6 +59,7 @@ function App() {
 
   useEffect(() => {
     if (data) {
+      console.log('data  useEffect(()', data);
       const calculatedTotalTime = data.reduce(
         // (acc, record) => acc + parseInt(record.time),
         (acc, record) => acc + record.time,
@@ -76,8 +70,6 @@ function App() {
   }, [data]);
 
   const addTodo = async (title: string, time: number) => {
-    console.log('title', title);
-    console.log('time', time);
     const newRecord = new Record('', title, time);
     const { error } = await supabase
       .from('study-record')
@@ -89,12 +81,13 @@ function App() {
     fetchData();
   };
   const handleDelete = async (id: string) => {
-        console.log(`handleDeleteを通過 id: ${id}`)
     try {
-        // eq は、Supabaseのクエリビルダーで使用されるメソッドの一つ
-        // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
-        // eq は "equal" の略で、SQLの = 演算子に相当する
-      await supabase.from('study-record').delete().eq('id', id);
+      // eq は、Supabaseのクエリビルダーで使用されるメソッドの一つ
+      // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
+      // eq は "equal" の略で、SQLの = 演算子に相当する
+      await RecordDelete(id);
+
+      console.log('record_delete.ts--------のApp.tsxのモック通過');
       fetchData();
     } catch (error) {
       if (error instanceof Error) {
@@ -199,13 +192,19 @@ function App() {
                           </div>
 
                           <div>
-
                             {studyContent && studyHour && studyHour >= 0 ? (
                               <DialogActionTrigger asChild>
-                                <button type="submit"  data-testid="submit">Save</button>
+                                <button type="submit" data-testid="submit">
+                                  Save
+                                </button>
                               </DialogActionTrigger>
                             ) : (
-                              <button type="submit" data-testid="submit-failure">Save</button>
+                              <button
+                                type="submit"
+                                data-testid="submit-failure"
+                              >
+                                Save
+                              </button>
                             )}
 
                             <DialogActionTrigger asChild>
@@ -229,7 +228,7 @@ function App() {
                         </td>
                         <td>
                           <button
-                        //     data-testid="delete-button"
+                            //     data-testid="delete-button"
                             data-testid={`delete-button-${record.id}`}
                             onClick={() => handleDelete(record.id)}
                           >
