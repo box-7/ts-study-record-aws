@@ -208,6 +208,7 @@ test('学習内容がないときに登録するとエラーが出る 未入力�
 // supabaseのデータを取得する関数
 jest.mock('@/lib/record.ts', () => {
   const { Record } = jest.requireActual('@/domain/record');
+  console.log('record.ts--------のテストのモック通過');
   return {
     GetAllRecords: jest
       .fn()
@@ -227,9 +228,17 @@ jest.mock('@/lib/record.ts', () => {
 });
 
 jest.mock('@/lib/record_delete.ts', () => {
+        const { Record } = jest.requireActual('@/domain/record');
   console.log('record_delete.ts--------のテストのモック通過');
   return {
-    DeleteRecord: jest.fn().mockImplementation(() => Promise.resolve()),
+        RecordDelete:  jest
+    .fn()
+    .mockImplementationOnce(() =>
+      Promise.resolve([
+        // new Record('5', 'Testtest5', 5),
+        new Record('10', 'Testtest10', 10),
+      ])
+    ),
   };
 });
 
