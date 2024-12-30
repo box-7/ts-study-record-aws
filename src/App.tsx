@@ -36,7 +36,7 @@ function App() {
 
   const fetchData = async () => {
     const getAllRecordMethod = async () => {
-      // supabaseを対応
+      // supabaseを呼び出す処理
       const todoRecord = await GetAllRecords();
       setData(todoRecord);
       setIsLoading(false);
@@ -87,7 +87,7 @@ function App() {
       // eq は "equal" の略で、SQLの = 演算子に相当する
       await RecordDelete(id);
 
-      console.log('record_delete.ts--------のApp.tsxのモック通過');
+//       console.log('record_delete.ts--------のApp.tsxのモック通過');
       fetchData();
     } catch (error) {
       if (error instanceof Error) {

@@ -203,58 +203,101 @@ test('学習内容がないときに登録するとエラーが出る 未入力�
   });
 });
 
-// @lib/record.ts
-// GetAllRecordsをexport
-// supabaseのデータを取得する関数
-jest.mock('@/lib/record.ts', () => {
-  const { Record } = jest.requireActual('@/domain/record');
-  console.log('record.ts--------のテストのモック通過');
-  return {
-    GetAllRecords: jest
-      .fn()
-      .mockImplementationOnce(() =>
-        Promise.resolve([
+// // @lib/record.ts
+// // GetAllRecordsをexport
+// // supabaseのデータを取得する関数
+// jest.mock('@/lib/record.ts', () => {
+//   const { Record } = jest.requireActual('@/domain/record');
+//   console.log('record.ts--------のテストのモック通過');
+//   return {
+//     GetAllRecords: jest
+//       .fn()
+//       .mockImplementationOnce(() =>
+//         Promise.resolve([
+//           new Record('5', 'Testtest5', 5),
+//           new Record('10', 'Testtest10', 10),
+//         ])
+//       )
+//       .mockImplementationOnce(() =>
+//         Promise.resolve([
+//         //   new Record('5', 'Testtest5', 5),
+//           new Record('10', 'Testtest10', 10),
+//           new Record('15', 'Testtest15', 15),
+//           new Record('20', 'Testtest20', 20),
+//         ])
+//       ),
+//   };
+// });
+
+// jest.mock('@/lib/record_delete.ts', () => {
+//         const { Record } = jest.requireActual('@/domain/record');
+//   console.log('record_delete.ts--------のテストのモック通過');
+//   return {
+//         RecordDelete:  jest
+//     .fn()
+//     .mockImplementationOnce(() =>
+//       Promise.resolve([
+//         // new Record('5', 'Testtest5', 5),
+//         new Record('10', 'Testtest10', 10),
+//         new Record('15', 'Testtest15', 15),
+//         new Record('20', 'Testtest20', 20),
+//       ])
+//     ),
+//   };
+// });
+
+import * as recordLib from '@/lib/record.ts';
+import * as recordLibDelete from '@/lib/record_delete.ts';
+// spyOnの場合、jest.mockは不要(あっても良い)
+jest.mock('@/lib/record.ts');
+jest.mock('@/lib/record_delete.ts');
+describe('テスト', () => {
+  test('削除ができること', async () => {
+    const { Record } = jest.requireActual('@/domain/record');
+    await waitFor(() => {
+      jest
+        .spyOn(recordLib, 'GetAllRecords')
+        .mockResolvedValueOnce([
           new Record('5', 'Testtest5', 5),
           new Record('10', 'Testtest10', 10),
         ])
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve([
-          // new Record('5', 'Testtest5', 5),
+        .mockResolvedValueOnce([
           new Record('10', 'Testtest10', 10),
-        ])
-      ),
-  };
-});
+          new Record('11', 'Testtest11', 11),
+          new Record('12', 'Testtest12', 12),
+        ]);
 
-jest.mock('@/lib/record_delete.ts', () => {
-        const { Record } = jest.requireActual('@/domain/record');
-  console.log('record_delete.ts--------のテストのモック通過');
-  return {
-        RecordDelete:  jest
-    .fn()
-    .mockImplementationOnce(() =>
-      Promise.resolve([
-        // new Record('5', 'Testtest5', 5),
-        new Record('10', 'Testtest10', 10),
-      ])
-    ),
-  };
-});
+        // classを使わなくても、以下のように書ける
+        // .mockResolvedValueOnce(Promise.resolve([
+        //         { id: '5', title: 'Testtest5', time: 5 },
+        //         { id: '10', title: 'Testtest10', time: 10 }
+        //       ]))
+        //       .mockResolvedValueOnce(Promise.resolve([
+        //         { id: '10', title: 'Testtest10', time: 10 },
+        //         { id: '11', title: 'Testtest11', time: 11 },
+        //         { id: '12', title: 'Testtest12', time: 12 }
+        //       ]));
+    });
 
-describe('テスト', () => {
-  test('削除ができること', async () => {
+    await waitFor(() => {
+        // export async function RecordDelete(id: string): Promise<void>のため、何も返さない（void）プロミスを返す
+        jest.spyOn(recordLibDelete, 'RecordDelete')
+        .mockResolvedValueOnce(Promise.resolve());
+    });
+
     render(
       <ChakraProvider value={defaultSystem}>
         <App />
       </ChakraProvider>
     );
 
+    // screen.debug();
     await waitFor(() => {
       const dialogTitle = screen.getByText('登録');
       expect(dialogTitle).toBeInTheDocument();
     });
-    // screen.debug();
+
+    screen.debug();
 
     const deleteButton = await waitFor(() =>
       screen.getByTestId('delete-button-5')
@@ -264,8 +307,9 @@ describe('テスト', () => {
     await waitFor(() => {
       fireEvent.click(deleteButton);
     });
-    // screen.debug();
+    screen.debug();
     await waitFor(() => {
+        //  expect(screen.queryByText('Testtest5 5時間')).toBeInTheDocument();
       expect(screen.queryByText('Testtest5 5時間')).not.toBeInTheDocument();
     });
   });
