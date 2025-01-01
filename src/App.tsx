@@ -2,7 +2,7 @@ import { useState, ChangeEvent } from 'react';
 // import './App.css'
 import supabase from './utils/supabase';
 import { useEffect } from 'react';
-import { Spinner, Text, VStack, Center, Box, Flex } from '@chakra-ui/react';
+
 import {
   DialogActionTrigger,
   DialogBody,
@@ -15,12 +15,29 @@ import {
   DialogTrigger,
   // } from './components/ui/dialog';
 } from '@/components/ui/dialog'; //なぜか@だとダメ
-import { Button } from '@/components/ui/button';
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Record } from './domain/record';
 import { GetAllRecords } from './lib/record';
 import { RecordDelete } from './lib/record_delete';
+
+import { Spinner, Text, VStack, Center, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+// import { colorPalettes } from "compositions/lib/color-palettes"
+
+// EmotionというCSS-in-JSライブラリからcss関数をインポートするためのコード
+// JavaScript内でCSSスタイルを定義し、Reactコンポーネントに適用することができる
+import { css } from '@emotion/react';
 
 interface FormValues {
   studyContent: string;
@@ -86,8 +103,6 @@ function App() {
       // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
       // eq は "equal" の略で、SQLの = 演算子に相当する
       await RecordDelete(id);
-
-//       console.log('record_delete.ts--------のApp.tsxのモック通過');
       fetchData();
     } catch (error) {
       if (error instanceof Error) {
@@ -144,105 +159,223 @@ function App() {
               </VStack>
             ) : data && data.length > 0 ? (
               <>
-                <h1>学習記録一覧!</h1>
-                <DialogRoot placement={'center'}>
-                  <DialogTrigger asChild>
-                    <button data-testid="registration">登録</button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>新規登録</DialogTitle>
-                    </DialogHeader>
-                    <DialogBody>
-                      <div>
-                        {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
+                <Box p={4}>
+                  <Heading as="h1" size="lg" mb={4}>
+                    学習記録一覧!
+                  </Heading>
+                  <DialogRoot placement={'center'}>
+                    <DialogTrigger asChild>
+                      {/* <button data-testid="registration">登録</button> */}
+                      <Button
+                        colorScheme="teal"
+                        data-testid="registration"
+                        mb={4}
+                      >
+                        登録
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>新規登録</DialogTitle>
+                      </DialogHeader>
+                      <DialogBody>
+                        <div>
+                          {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
                                 handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
                                 二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                          <div>
-                            <label htmlFor="studyContent">学習内容</label>
-                            <input
-                              id="studyContent"
-                              type="text"
-                              {...register('studyContent', {
-                                required: '内容の入力は必須です',
-                              })}
-                            />
-                            {errors['studyContent'] && (
-                              <p>{errors['studyContent'].message}</p>
-                            )}
-                          </div>
+                          <form onSubmit={handleSubmit(onSubmit)}>
+                            <div>
+                              <label htmlFor="studyContent">学習内容</label>
+                              <input
+                                id="studyContent"
+                                type="text"
+                                {...register('studyContent', {
+                                  required: '内容の入力は必須です',
+                                })}
+                              />
+                              {errors['studyContent'] && (
+                                <p>{errors['studyContent'].message}</p>
+                              )}
+                            </div>
 
-                          <div>
-                            <label htmlFor="studyHour">学習時間</label>
-                            <input
-                              id="studyHour"
-                              type="number"
-                              {...register('studyHour', {
-                                required: '時間の入力は必須です',
-                                min: {
-                                  value: 0,
-                                  message: '時間は0以上である必要があります',
-                                },
-                              })}
-                            />
-                            {errors['studyHour'] && (
-                              <p>{errors['studyHour'].message}</p>
-                            )}
-                          </div>
+                            <div>
+                              <label htmlFor="studyHour">学習時間</label>
+                              <input
+                                id="studyHour"
+                                type="number"
+                                {...register('studyHour', {
+                                  required: '時間の入力は必須です',
+                                  min: {
+                                    value: 0,
+                                    message: '時間は0以上である必要があります',
+                                  },
+                                })}
+                              />
+                              {errors['studyHour'] && (
+                                <p>{errors['studyHour'].message}</p>
+                              )}
+                            </div>
 
-                          <div>
-                            {studyContent && studyHour && studyHour >= 0 ? (
-                              <DialogActionTrigger asChild>
-                                <button type="submit" data-testid="submit">
+                            <div>
+                              {studyContent && studyHour && studyHour >= 0 ? (
+                                <DialogActionTrigger asChild>
+                                  <button type="submit" data-testid="submit">
+                                    Save
+                                  </button>
+                                </DialogActionTrigger>
+                              ) : (
+                                <button
+                                  type="submit"
+                                  data-testid="submit-failure"
+                                >
                                   Save
                                 </button>
-                              </DialogActionTrigger>
-                            ) : (
-                              <button
-                                type="submit"
-                                data-testid="submit-failure"
-                              >
-                                Save
-                              </button>
-                            )}
+                              )}
 
-                            <DialogActionTrigger asChild>
-                              <Button color="red" onClick={onClickCancelRecord}>
-                                Cancel
-                              </Button>
-                            </DialogActionTrigger>
-                          </div>
-                        </form>
-                      </div>
-                    </DialogBody>
-                    <DialogCloseTrigger onClick={onClickCancelRecord} />
-                  </DialogContent>
-                </DialogRoot>
-                <table>
-                  <tbody>
-                    {data.map((record) => (
-                      <tr key={record.id}>
-                        <td data-testid="study-content-hour">
-                          {record.title} {record.time}時間
-                        </td>
-                        <td>
-                          <button
-                            //     data-testid="delete-button"
-                            data-testid={`delete-button-${record.id}`}
-                            onClick={() => handleDelete(record.id)}
-                          >
-                            削除
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <h2>合計時間: {totalTime} / 1000(h)</h2>
+                              <DialogActionTrigger asChild>
+                                <Button
+                                  color="red"
+                                  onClick={onClickCancelRecord}
+                                >
+                                  Cancel
+                                </Button>
+                              </DialogActionTrigger>
+                            </div>
+                          </form>
+                        </div>
+                      </DialogBody>
+                      <DialogCloseTrigger onClick={onClickCancelRecord} />
+                    </DialogContent>
+                  </DialogRoot>
+                  {/* <table> */}
+
+                  <Table.Root size="sm">
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeader>Title</Table.ColumnHeader>
+                        <Table.ColumnHeader>Hour</Table.ColumnHeader>
+                        <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {data.map((item) => (
+                        <Table.Row key={item.id}>
+                          <Table.Cell>{item.title} </Table.Cell>
+                          <Table.Cell>{item.time}時間</Table.Cell>
+                          <Table.Cell>
+                            <Button
+                              // colorPalette='red'などで、色の変更ができない
+                              css={css`
+                                background-color: red;
+                                border-width: 1px;
+                                border-color: black;
+                                color: white;
+                                cursor: pointer;
+                                &:hover {
+                                  background-color: darkred;
+                                }
+                              `}
+                              //     data-testid="delete-button"
+                              data-testid={`delete-button-${item.id}`}
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              削除
+                            </Button>
+                          </Table.Cell>
+                          {/* <Table.Cell textAlign="end">時間</Table.Cell> */}
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Root>
+                  <Heading as="h2" size="md" mb={4}>
+                    合計時間: {totalTime} / 1000(h)
+                  </Heading>
+                </Box>
               </>
             ) : (
-              <p>データがありません</p>
+              <>
+                <h1>学習記録一覧!</h1>
+                <table>
+                  <DialogRoot placement={'center'}>
+                    <DialogTrigger asChild>
+                      <button data-testid="registration">登録</button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>新規登録</DialogTitle>
+                      </DialogHeader>
+                      <DialogBody>
+                        <div>
+                          {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
+                                                                                                        handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
+                                                                                                        二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
+                          <form onSubmit={handleSubmit(onSubmit)}>
+                            <div>
+                              <label htmlFor="studyContent">学習内容</label>
+                              <input
+                                id="studyContent"
+                                type="text"
+                                {...register('studyContent', {
+                                  required: '内容の入力は必須です',
+                                })}
+                              />
+                              {errors['studyContent'] && (
+                                <p>{errors['studyContent'].message}</p>
+                              )}
+                            </div>
+
+                            <div>
+                              <label htmlFor="studyHour">学習時間</label>
+                              <input
+                                id="studyHour"
+                                type="number"
+                                {...register('studyHour', {
+                                  required: '時間の入力は必須です',
+                                  min: {
+                                    value: 0,
+                                    message: '時間は0以上である必要があります',
+                                  },
+                                })}
+                              />
+                              {errors['studyHour'] && (
+                                <p>{errors['studyHour'].message}</p>
+                              )}
+                            </div>
+
+                            <div>
+                              {studyContent && studyHour && studyHour >= 0 ? (
+                                <DialogActionTrigger asChild>
+                                  <button type="submit" data-testid="submit">
+                                    Save
+                                  </button>
+                                </DialogActionTrigger>
+                              ) : (
+                                <button
+                                  type="submit"
+                                  data-testid="submit-failure"
+                                >
+                                  Save
+                                </button>
+                              )}
+
+                              <DialogActionTrigger asChild>
+                                <Button
+                                  color="red"
+                                  onClick={onClickCancelRecord}
+                                >
+                                  Cancel
+                                </Button>
+                              </DialogActionTrigger>
+                            </div>
+                          </form>
+                        </div>
+                      </DialogBody>
+                      <DialogCloseTrigger onClick={onClickCancelRecord} />
+                    </DialogContent>
+                  </DialogRoot>
+                </table>
+                <p>データがありません</p>
+              </>
             )}
           </div>
         </Flex>
