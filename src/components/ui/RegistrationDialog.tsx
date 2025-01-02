@@ -10,16 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Box,
-  Button,
-  Heading,
-  Table,
-} from '@chakra-ui/react';
+import { Box, Button, Heading, Table } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { Record } from '@/domain/record';
 import supabase from '@/utils/supabase';
+import { css } from '@emotion/react';
 
 interface RegistrationDialogProps {
   // どの書き方でもOK
@@ -85,7 +81,23 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
   return (
     <DialogRoot placement={'center'}>
       <DialogTrigger asChild>
-        <Button colorScheme="teal" data-testid="registration" mb={4}>
+        {/* <Button colorScheme="teal" data-testid="registration" mb={4}> */}
+        <Button
+          css={css`
+            background-color: deepskyblue; /* 明るい青色に変更 */
+            border-width: 1px;
+            border-color: black;
+            color: white;
+            cursor: pointer;
+            padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
+            font-size: 18px; /* フォントサイズを小さくする */
+            &:hover {
+              background-color: darkslategray;
+            }
+          `}
+          data-testid="registration"
+          //     onClick={handleRegistration}
+        >
           登録
         </Button>
       </DialogTrigger>

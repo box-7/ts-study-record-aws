@@ -9,18 +9,21 @@ import { GetAllRecords } from './lib/record';
 import { RecordDelete } from './lib/record_delete';
 
 import { Spinner, Text, VStack, Center, Flex } from '@chakra-ui/react';
-import {
-  Box,
-  Button,
-  Heading,
-  Table,
-} from '@chakra-ui/react';
+import { Box, Button, Heading, Table } from '@chakra-ui/react';
 
 // EmotionというCSS-in-JSライブラリからcss関数をインポートするためのコード
 // JavaScript内でCSSスタイルを定義し、Reactコンポーネントに適用できる
 import { css } from '@emotion/react';
 
 import RegistrationDialog from './components/ui/RegistrationDialog';
+
+import {
+  FaBook,
+  FaPen,
+  FaCalendarAlt,
+  FaChartLine,
+  FaTasks,
+} from 'react-icons/fa';
 
 function App() {
   //   const [data, setData] = useState<StudyRecord[]>([]);
@@ -93,17 +96,34 @@ function App() {
             ) : data && data.length > 0 ? (
               <>
                 <Box p={4}>
-                  <Heading as="h1" size="lg" mb={4}>
-                    学習記録一覧
+                  <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
+                    <Box display="flex" alignItems="center">
+                      <FaBook style={{ marginRight: '8px' }} />
+                      学習記録一覧
+                    </Box>
                   </Heading>
 
                   <RegistrationDialog fetchData={fetchData} />
 
-                  <Table.Root size="sm">
+                  <Table.Root size="md" striped m={8}>
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColumnHeader>Title</Table.ColumnHeader>
-                        <Table.ColumnHeader>Hour</Table.ColumnHeader>
+                        <Table.ColumnHeader
+                          css={css`
+                            font-weight: bold;
+                            font-size: 20px;
+                          `}
+                        >
+                          タイトル
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader
+                          css={css`
+                            font-weight: bold;
+                            font-size: 20px;
+                          `}
+                        >
+                          時間
+                        </Table.ColumnHeader>
                         <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
@@ -115,13 +135,15 @@ function App() {
                           <Table.Cell>
                             <Button
                               // ChakraUIのcolorPalette='red'で、色の変更ができない
-                              //  EmotionというCSS-in-JSライブラリで色を変える
+                              // そのため、EmotionというCSS-in-JSライブラリで色を変える
                               css={css`
                                 background-color: red;
                                 border-width: 1px;
                                 border-color: black;
                                 color: white;
                                 cursor: pointer;
+                                padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
+                                font-size: 18px; /* フォントサイズを小さくする */
                                 &:hover {
                                   background-color: darkred;
                                 }
@@ -136,16 +158,23 @@ function App() {
                       ))}
                     </Table.Body>
                   </Table.Root>
-                  <Heading as="h2" size="md" mb={4}>
+                  <Heading as="h2" size="2xl" mb={4} mt={6}>
                     合計時間: {totalTime} / 1000(h)
                   </Heading>
                 </Box>
               </>
             ) : (
               <>
-                <h1>学習記録一覧</h1>
+                <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
+                  <Box display="flex" alignItems="center">
+                    <FaBook style={{ marginRight: '8px' }} />
+                    学習記録一覧
+                  </Box>
+                </Heading>
                 <RegistrationDialog fetchData={fetchData} />
-                <p>データがありません</p>
+                <Heading as="h2" size="2xl" mb={4} mt={6}>
+                  <p>データがありません</p>
+                </Heading>
               </>
             )}
           </div>
