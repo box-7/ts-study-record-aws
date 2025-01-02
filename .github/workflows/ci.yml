@@ -63,14 +63,14 @@ jobs: # ワークフローのジョブを定義
           cache: "npm"
       # - name: Install firebase-tools
       #   run: npm install --save-dev firebase-tools
-
+      # -gオプションは、パッケージをグローバルにインストールする
       - name: Install Firebase CLI
-        run: npm install -g firebase-tools # -gオプションは、パッケージをグローバルにインストールする
+        run: npm install -g firebase-tools
       - name: Decode Firebase service account key
         run: |
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./firebase-key.json
-      # GitHub Secretsに保存されているFIREBASE_KEYを取得し、Base64デコードしてfirebase-key.jsonというファイルに保存
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
+      # GitHub Secretsに保存されているFIREBASE_KEYを取得し、Base64デコードしてfirebase-key.jsonというファイルに保存
       # GOOGLE_APPLICATION_CREDENTIALSという環境変数を設定し、その値をfirebase-key.jsonのパスに設定
       # この環境変数は、Firebase CLIが認証に使用
       # GitHub Actionsのコンテキスト変数で、現在のワークスペースディレクトリのパスを指す
