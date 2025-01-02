@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useState, ChangeEvent } from 'react';
 // import './App.css'
 // import supabase from './utils/supabase';
@@ -112,6 +113,7 @@ function App() {
                           css={css`
                             font-weight: bold;
                             font-size: 20px;
+                            text-align: center;
                           `}
                         >
                           タイトル
