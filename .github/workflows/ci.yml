@@ -1,18 +1,20 @@
-name: CI
+name: CI # ワークフローの名前
 
-on:
+on: # ワークフローのトリガーとなるイベントを定義
   push:
     branches:
-      - main  # ここで指定したブランチにプッシュされたときにパイプラインが動作します
+      - main
   workflow_dispatch: # GitHub Actions の UI から手動で実行するためのトリガー
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
+jobs: # ワークフローのジョブを定義
+  build:  # ワークフローのジョブid
+    runs-on: ubuntu-latest # ジョブを実行するランナーの環境を指定
+    env :
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repository  # ワークフローのジョブ内でリポジトリのコードを取得し、ビルド、テスト、デプロイなどの操作ができる
+        uses: actions/checkout@v4 # usesキーでアクションを指定
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,22 +26,14 @@ jobs:
       - name: Check environment variables  # 環境変数が設定されているか確認
       # -z: このオプションは、文字列が空であるかどうかを確認
       #  $ は、シェルスクリプトで変数を参照するために使用される
+      # run: |は、GitHub Actionsのワークフローファイル（YAMLファイル）で複数行のシェルコマンドを実行するために使用される
         run: |
-          if [ -z "${{ secrets.VITE_SUPABASE_URL }}" ]; then echo "VITE_SUPABASE_URL is not set"; else echo "VITE_SUPABASE_URL is set"; fi
-          if [ -z "${{ secrets.VITE_SUPABASE_ANON_KEY }}" ]; then echo "VITE_SUPABASE_ANON_KEY is not set"; else echo "VITE_SUPABASE_ANON_KEY is set"; fi
-
+          if [ -z "${{ VITE_SUPABASE_URL }}" ]; then echo "VITE_SUPABASE_URL is not set"; else echo "VITE_SUPABASE_URL is set"; fi
+          if [ -z "${{ VITE_SUPABASE_ANON_KEY }}" ]; then echo "VITE_SUPABASE_ANON_KEY is not set"; else echo "VITE_SUPABASE_ANON_KEY is set"; fi
       - name: Run tests
-        run: npm run test
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
+        run: npm run test # 環境変数は定義済み
       - name: Build project
-        run: npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
+        run: npm run build # 環境変数は定義済み
       # アーティファクト(ソフトウェア開発プロセスにおいて生成される成果物)をアップロード
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -55,6 +49,8 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     needs: build
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,13 +63,19 @@ jobs:
           cache: "npm"
       # - name: Install firebase-tools
       #   run: npm install --save-dev firebase-tools
-      # - name: Decode Firebase service account key
-      #   run: |
-      #     echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./firebase-key.json
-      #     echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
 
       - name: Install Firebase CLI
+      # -gオプションは、パッケージをグローバルにインストールする
         run: npm install -g firebase-tools
+
+      - name: Decode Firebase service account key
+        run: |
+          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./firebase-key.json
+      # GitHub Secretsに保存されているFIREBASE_KEYを取得し、Base64デコードしてfirebase-key.jsonというファイルに保存
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
+      # GOOGLE_APPLICATION_CREDENTIALSという環境変数を設定し、その値をfirebase-key.jsonのパスに設定
+      # この環境変数は、Firebase CLIが認証に使用
+      # GitHub Actionsのコンテキスト変数で、現在のワークスペースディレクトリのパスを指す
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -83,8 +85,6 @@ jobs:
 
       - name: Deploy to Firebase
         run: firebase deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       # - name: change space
       #   run: ./node_modules/.bin/firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
