@@ -46,39 +46,18 @@ it('新規登録ボタンがある', async () => {
   });
 });
 
-it('isLoadingがfalseの場合、データテーブルを表示する', async () => {
-  render(
-    <ChakraProvider value={defaultSystem}>
-      <App />
-    </ChakraProvider>
-  );
-  await waitFor(() => {
-        const dialogTitle = screen.getByText('新規登録');
-        expect(dialogTitle).toBeInTheDocument();
-      });
-  // 非同期処理が完了するまで待機
-  await waitFor(() => {
-    // テーブルが表示されているか確認
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
-});
-
 test('登録できること', async () => {
   render(
     <ChakraProvider value={defaultSystem}>
       <App />
     </ChakraProvider>
   );
-  await waitFor(() => {
-        const dialogTitle = screen.getByText('新規登録');
-        expect(dialogTitle).toBeInTheDocument();
-      });
+
   const registerButton = await waitFor(() =>
     screen.getByTestId('registration')
   );
   await userEvent.click(registerButton);
 
-  // ダイアログが表示されるのを待つ
   await waitFor(() => {
     const dialogTitle = screen.getByText('新規登録');
     expect(dialogTitle).toBeInTheDocument();
@@ -92,14 +71,6 @@ test('登録できること', async () => {
   await userEvent.type(studyContentInput, 'Math');
   await userEvent.type(studyHourInput, '2');
 
-  // await waitFor(() => {
-  //         // 入力フィールドの値をアサート
-  //         expect(studyContentInput).toHaveValue('Math');
-  //         expect(studyHourInput).toHaveValue(2);
-  // });
-  // // 現在のDOMの状態を出力してデバッグ
-  // screen.debug();
-
   // Saveボタンが有効になるのを待つ
   const submitButton = await waitFor(() => screen.getByTestId('submit'));
   expect(submitButton).not.toBeDisabled();
@@ -109,7 +80,7 @@ test('登録できること', async () => {
   // 結果が表示されるのを待つ
   await waitFor(() => {
     const studyContentHour = screen
-      .getAllByTestId('study-content-hour')
+      .getAllByRole('row')
       .find(
         (element) =>
           element.textContent && element.textContent.includes('Math 2時間')
@@ -214,53 +185,52 @@ import * as recordLib from '@/lib/record.ts';
 import * as recordLibDelete from '@/lib/record_delete.ts';
 
 describe('mockを使ったテスト', () => {
-// // @lib/record.ts
-// // GetAllRecordsをexport
-// // supabaseのデータを取得する関数
-// jest.mock('@/lib/record.ts', () => {
-//   const { Record } = jest.requireActual('@/domain/record');
-//   console.log('record.ts--------のテストのモック通過');
-//   return {
-//     GetAllRecords: jest
-//       .fn()
-//       .mockImplementationOnce(() =>
-//         Promise.resolve([
-//           new Record('5', 'Testtest5', 5),
-//           new Record('10', 'Testtest10', 10),
-//         ])
-//       )
-//       .mockImplementationOnce(() =>
-//         Promise.resolve([
-//         //   new Record('5', 'Testtest5', 5),
-//           new Record('10', 'Testtest10', 10),
-//           new Record('15', 'Testtest15', 15),
-//           new Record('20', 'Testtest20', 20),
-//         ])
-//       ),
-//   };
-// });
+  // // @lib/record.ts
+  // // GetAllRecordsをexport
+  // // supabaseのデータを取得する関数
+  // jest.mock('@/lib/record.ts', () => {
+  //   const { Record } = jest.requireActual('@/domain/record');
+  //   console.log('record.ts--------のテストのモック通過');
+  //   return {
+  //     GetAllRecords: jest
+  //       .fn()
+  //       .mockImplementationOnce(() =>
+  //         Promise.resolve([
+  //           new Record('5', 'Testtest5', 5),
+  //           new Record('10', 'Testtest10', 10),
+  //         ])
+  //       )
+  //       .mockImplementationOnce(() =>
+  //         Promise.resolve([
+  //         //   new Record('5', 'Testtest5', 5),
+  //           new Record('10', 'Testtest10', 10),
+  //           new Record('15', 'Testtest15', 15),
+  //           new Record('20', 'Testtest20', 20),
+  //         ])
+  //       ),
+  //   };
+  // });
 
-// jest.mock('@/lib/record_delete.ts', () => {
-//         const { Record } = jest.requireActual('@/domain/record');
-//   console.log('record_delete.ts--------のテストのモック通過');
-//   return {
-//         RecordDelete:  jest
-//     .fn()
-//     .mockImplementationOnce(() =>
-//       Promise.resolve([
-//         // new Record('5', 'Testtest5', 5),
-//         new Record('10', 'Testtest10', 10),
-//         new Record('15', 'Testtest15', 15),
-//         new Record('20', 'Testtest20', 20),
-//       ])
-//     ),
-//   };
-// });
+  // jest.mock('@/lib/record_delete.ts', () => {
+  //         const { Record } = jest.requireActual('@/domain/record');
+  //   console.log('record_delete.ts--------のテストのモック通過');
+  //   return {
+  //         RecordDelete:  jest
+  //     .fn()
+  //     .mockImplementationOnce(() =>
+  //       Promise.resolve([
+  //         // new Record('5', 'Testtest5', 5),
+  //         new Record('10', 'Testtest10', 10),
+  //         new Record('15', 'Testtest15', 15),
+  //         new Record('20', 'Testtest20', 20),
+  //       ])
+  //     ),
+  //   };
+  // });
 
-
-// spyOnの場合、jest.mockは不要(あっても良い)
-jest.mock('@/lib/record.ts');
-jest.mock('@/lib/record_delete.ts');
+  // spyOnの場合、jest.mockは不要(あっても良い)
+  jest.mock('@/lib/record.ts');
+  jest.mock('@/lib/record_delete.ts');
 
   test('削除ができること', async () => {
     const { Record } = jest.requireActual('@/domain/record');
@@ -277,21 +247,22 @@ jest.mock('@/lib/record_delete.ts');
           new Record('12', 'Testtest12', 12),
         ]);
 
-        // classを使わなくても、以下のように書ける
-        // .mockResolvedValueOnce(Promise.resolve([
-        //         { id: '5', title: 'Testtest5', time: 5 },
-        //         { id: '10', title: 'Testtest10', time: 10 }
-        //       ]))
-        //       .mockResolvedValueOnce(Promise.resolve([
-        //         { id: '10', title: 'Testtest10', time: 10 },
-        //         { id: '11', title: 'Testtest11', time: 11 },
-        //         { id: '12', title: 'Testtest12', time: 12 }
-        //       ]));
+      // classを使わなくても、以下のように書ける
+      // .mockResolvedValueOnce(Promise.resolve([
+      //         { id: '5', title: 'Testtest5', time: 5 },
+      //         { id: '10', title: 'Testtest10', time: 10 }
+      //       ]))
+      //       .mockResolvedValueOnce(Promise.resolve([
+      //         { id: '10', title: 'Testtest10', time: 10 },
+      //         { id: '11', title: 'Testtest11', time: 11 },
+      //         { id: '12', title: 'Testtest12', time: 12 }
+      //       ]));
     });
 
     await waitFor(() => {
-        // export async function RecordDelete(id: string): Promise<void>のため、何も返さない（void）プロミスを返す
-        jest.spyOn(recordLibDelete, 'RecordDelete')
+      // export async function RecordDelete(id: string): Promise<void>のため、何も返さない（void）プロミスを返す
+      jest
+        .spyOn(recordLibDelete, 'RecordDelete')
         .mockResolvedValueOnce(Promise.resolve());
     });
 
@@ -306,7 +277,7 @@ jest.mock('@/lib/record_delete.ts');
       const dialogTitle = screen.getByText('登録');
       expect(dialogTitle).toBeInTheDocument();
     });
-//     screen.debug();
+    //     screen.debug();
 
     const deleteButton = await waitFor(() =>
       screen.getByTestId('delete-button-5')
@@ -316,12 +287,40 @@ jest.mock('@/lib/record_delete.ts');
     await waitFor(() => {
       fireEvent.click(deleteButton);
     });
-//     screen.debug();
+    //     screen.debug();
     await waitFor(() => {
-        //  expect(screen.queryByText('Testtest5 5時間')).toBeInTheDocument();
+      //  expect(screen.queryByText('Testtest5 5時間')).toBeInTheDocument();
       expect(screen.queryByText('Testtest5 5時間')).not.toBeInTheDocument();
     });
   });
+
+  //データがない場合エラーになるので、モックデータを使って回避
+  it('isLoadingがfalseの場合、データテーブルを表示する', async () => {
+    const { Record } = jest.requireActual('@/domain/record');
+    await waitFor(() => {
+      jest
+        .spyOn(recordLib, 'GetAllRecords')
+        .mockResolvedValueOnce([
+          new Record('5', 'Testtest5', 5),
+          new Record('10', 'Testtest10', 10),
+        ])
+        .mockResolvedValueOnce([
+          new Record('10', 'Testtest10', 10),
+          new Record('11', 'Testtest11', 11),
+          new Record('12', 'Testtest12', 12),
+        ]);
+    });
+    render(
+      <ChakraProvider value={defaultSystem}>
+        <App />
+      </ChakraProvider>
+    );
+    await waitFor(() => {
+      const dialogTitle = screen.getByText('登録');
+      expect(dialogTitle).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByRole('table')).toBeInTheDocument();
+    });
+  });
 });
-
-
