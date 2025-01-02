@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # ここで指定したブランチにプッシュされたときにパイプラインが動作します
+  workflow_dispatch: # GitHub Actions の UI から手動で実行するためのトリガー
 
 jobs:
   build:
