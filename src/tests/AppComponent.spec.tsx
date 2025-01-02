@@ -19,7 +19,7 @@ it('タイトルをレンダリングする', async () => {
   );
   // 非同期処理が完了するまで待機
   await waitFor(() => {
-    expect(screen.getByText('学習記録一覧!')).toBeInTheDocument();
+    expect(screen.getByText('学習記録一覧')).toBeInTheDocument();
   });
 });
 it('isLoadingがtrueのとき、ローディング・スピナーとテキストを表示する', () => {
@@ -52,6 +52,10 @@ it('isLoadingがfalseの場合、データテーブルを表示する', async ()
       <App />
     </ChakraProvider>
   );
+  await waitFor(() => {
+        const dialogTitle = screen.getByText('新規登録');
+        expect(dialogTitle).toBeInTheDocument();
+      });
   // 非同期処理が完了するまで待機
   await waitFor(() => {
     // テーブルが表示されているか確認
@@ -65,7 +69,10 @@ test('登録できること', async () => {
       <App />
     </ChakraProvider>
   );
-
+  await waitFor(() => {
+        const dialogTitle = screen.getByText('新規登録');
+        expect(dialogTitle).toBeInTheDocument();
+      });
   const registerButton = await waitFor(() =>
     screen.getByTestId('registration')
   );
@@ -299,8 +306,7 @@ jest.mock('@/lib/record_delete.ts');
       const dialogTitle = screen.getByText('登録');
       expect(dialogTitle).toBeInTheDocument();
     });
-
-    screen.debug();
+//     screen.debug();
 
     const deleteButton = await waitFor(() =>
       screen.getByTestId('delete-button-5')
@@ -310,7 +316,7 @@ jest.mock('@/lib/record_delete.ts');
     await waitFor(() => {
       fireEvent.click(deleteButton);
     });
-    screen.debug();
+//     screen.debug();
     await waitFor(() => {
         //  expect(screen.queryByText('Testtest5 5時間')).toBeInTheDocument();
       expect(screen.queryByText('Testtest5 5時間')).not.toBeInTheDocument();
