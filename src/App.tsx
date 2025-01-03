@@ -133,7 +133,7 @@ function App() {
                       {data.map((item) => (
                         <Table.Row key={item.id}>
                           <Table.Cell>{item.title} </Table.Cell>
-                          <Table.Cell>{item.time}時間test</Table.Cell>
+                          <Table.Cell>{item.time}時間</Table.Cell>
                           <Table.Cell>
                             <Button
                               // ChakraUIのcolorPalette='red'で、色の変更ができない
