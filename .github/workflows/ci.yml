@@ -35,15 +35,15 @@ jobs: # ワークフローのジョブを定義
       - name: Build project
         run: npm run build # 環境変数は定義済み
       # アーティファクト(ソフトウェア開発プロセスにおいて生成される成果物)をアップロード
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          # アップロードするアーティファクトの名前を指定
-          # この名前は、後のステップでアーティファクトをダウンロードする際に使用される
-          name: build-artifacts
-          # アップロードするファイルやディレクトリのパスを指定
-          # distディレクトリ内のすべてのファイルがアーティファクトとしてアップロードされる
-          path: dist
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     # アップロードするアーティファクトの名前を指定
+      #     # この名前は、後のステップでアーティファクトをダウンロードする際に使用される
+      #     name: build-artifacts
+      #     # アップロードするファイルやディレクトリのパスを指定
+      #     # distディレクトリ内のすべてのファイルがアーティファクトとしてアップロードされる
+      #     path: dist
 
   deploy:
     name: deploy
