@@ -53,28 +53,3 @@ export default defineConfig({
         // console.log(process.env.VITE_API_URL); // 環境変数を使用
 
 
-
-
-
-
-
-// export default defineConfig({
-//         plugins: [react(), tsconfigPaths()],
-//         define: {
-//                 prefix: 'VITE',
-//                 mountedPath: 'process.env'
-//         }
-//       });
-
-// https://vitejs.dev/config/
-// export default defineConfig({
-//   plugins: [react(), tsconfigPaths()],
-// })
-
-// import { defineConfig } from 'vite'
-// import react from '@vitejs/plugin-react'
-
-// // https://vite.dev/config/
-// export default defineConfig({
-//   plugins: [react()],
-// })
