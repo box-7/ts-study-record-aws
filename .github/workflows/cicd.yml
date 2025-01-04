@@ -1,20 +1,20 @@
-name: CI # ワークフローの名前
+name: CICD
 
-on: # ワークフローのトリガーとなるイベントを定義
+on:
   push:
     branches:
       - main
   workflow_dispatch: # GitHub Actions の UI から手動で実行するためのトリガー
 
-jobs: # ワークフローのジョブを定義
-  build:  # ワークフローのジョブid
+jobs:
+  build:
     runs-on: ubuntu-latest # ジョブを実行するランナーの環境を指定
     env :
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     steps:
       - name: Checkout repository  # ワークフローのジョブ内でリポジトリのコードを取得し、ビルド、テスト、デプロイなどの操作ができる
-        uses: actions/checkout@v4 # usesキーでアクションを指定
+        uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -23,27 +23,16 @@ jobs: # ワークフローのジョブを定義
         run: npm install
       - name: Run Prettier
         run: npx prettier --write .
-      # -z: このオプションは、文字列が空であるかどうかを確認
-      #  $ は、シェルスクリプトで変数を参照するために使用される
-      # run: |は、GitHub Actionsのワークフローファイル（YAMLファイル）で複数行のシェルコマンドを実行するために使用される
-      - name: Check environment variables  # 環境変数が設定されているか確認
-        run: |
-          if [ -z "${VITE_SUPABASE_URL}" ]; then echo "VITE_SUPABASE_URL is not set"; else echo "VITE_SUPABASE_URL is set"; fi
-          if [ -z "${VITE_SUPABASE_ANON_KEY}" ]; then echo "VITE_SUPABASE_ANON_KEY is not set"; else echo "VITE_SUPABASE_ANON_KEY is set"; fi
       - name: Run tests
         run: npm run test # 環境変数は定義済み
       - name: Build project
-        run: npm run build # 環境変数は定義済み
+        run: npm run build
       # アーティファクト(ソフトウェア開発プロセスにおいて生成される成果物)をアップロード
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          # アップロードするアーティファクトの名前を指定
-          # この名前は、後のステップでアーティファクトをダウンロードする際に使用される
-          name: build-artifacts
-          # アップロードするファイルやディレクトリのパスを指定
-          # distディレクトリ内のすべてのファイルがアーティファクトとしてアップロードされる
-          path: dist
+          name: build-artifacts # アップロードするアーティファクトの名前を指定
+          path: dist # distディレクトリ内のすべてのファイルがアーティファクトとしてアップロードされる
 
   deploy:
     name: deploy
@@ -54,17 +43,16 @@ jobs: # ワークフローのジョブを定義
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build-artifacts # buildでアップロードしたアーティファクトの名前
           path: dist
-      # Add any build steps here. For example:
-      # - run: npm ci && npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
-          channelId: live
 
 
+    # 別の書き方
     # env:
     #   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
     # steps:
@@ -99,12 +87,6 @@ jobs: # ワークフローのジョブを定義
 
     #   - name: Deploy to Firebase
     #     run: firebase deploy --only hosting
-
-
-
-
-
-
 
       # - name: change space
       #   run: ./node_modules/.bin/firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
