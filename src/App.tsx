@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 // import { useForm, SubmitHandler } from 'react-hook-form';
 import { Record } from './domain/record';
-import { GetAllRecords } from './lib/record';
+import { GetAllRecords } from '@/lib/record';
 import { RecordDelete } from './lib/record_delete';
 
 import { Spinner, Text, VStack, Center, Flex } from '@chakra-ui/react';
@@ -18,16 +18,9 @@ import { css } from '@emotion/react';
 
 import RegistrationDialog from './components/ui/RegistrationDialog';
 
-import {
-  FaBook,
-  FaPen,
-  FaCalendarAlt,
-  FaChartLine,
-  FaTasks,
-} from 'react-icons/fa';
+import { FaBook } from 'react-icons/fa';
 
 function App() {
-  //   const [data, setData] = useState<StudyRecord[]>([]);
   const [data, setData] = useState<Record[]>([]);
   const [totalTime, setTotalTime] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,7 +75,7 @@ function App() {
 
   return (
     <>
-      <Center h="100vh">
+      <Center>
         <Flex justify="center" align="center">
           <div>
             {isLoading ? (
@@ -96,7 +89,7 @@ function App() {
               </VStack>
             ) : data && data.length > 0 ? (
               <>
-                <Box p={4}>
+                <Box p={4} pt={8}>
                   <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
                     <Box display="flex" alignItems="center">
                       <FaBook style={{ marginRight: '8px' }} />
@@ -104,23 +97,26 @@ function App() {
                     </Box>
                   </Heading>
 
-                  <RegistrationDialog fetchData={fetchData} />
+                  <RegistrationDialog
+                    button="registration"
+                    setData={setData}
+                    fetchData={fetchData}
+                  />
 
-                  <Table.Root size="md" striped m={8}>
+                  <Table.Root size="md" striped m={8} w="100%">
                     <Table.Header>
                       <Table.Row>
                         <Table.ColumnHeader
                           css={css`
-                            font-weight: bold;
+                            //     font-weight: bold;
                             font-size: 20px;
-                            text-align: center;
                           `}
                         >
                           タイトル
                         </Table.ColumnHeader>
                         <Table.ColumnHeader
                           css={css`
-                            font-weight: bold;
+                            //     font-weight: bold;
                             font-size: 20px;
                           `}
                         >
@@ -135,26 +131,35 @@ function App() {
                           <Table.Cell>{item.title} </Table.Cell>
                           <Table.Cell>{item.time}時間</Table.Cell>
                           <Table.Cell>
-                            <Button
-                              // ChakraUIのcolorPalette='red'で、色の変更ができない
-                              // そのため、EmotionというCSS-in-JSライブラリで色を変える
-                              css={css`
-                                background-color: red;
-                                border-width: 1px;
-                                border-color: black;
-                                color: white;
-                                cursor: pointer;
-                                padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                font-size: 18px; /* フォントサイズを小さくする */
-                                &:hover {
-                                  background-color: darkred;
-                                }
-                              `}
-                              data-testid={`delete-button-${item.id}`}
-                              onClick={() => handleDelete(item.id)}
-                            >
-                              削除
-                            </Button>
+                            <Box display="flex">
+                              <RegistrationDialog
+                                item={item}
+                                button="modifcation"
+                                setData={setData}
+                                fetchData={fetchData}
+                              />
+                              <Button
+                                ml={2} /* ボタン間にスペースを追加 */
+                                // ChakraUIのcolorPalette='red'で、色の変更ができない
+                                // そのため、EmotionというCSS-in-JSライブラリで色を変える
+                                css={css`
+                                  background-color: red;
+                                  border-width: 1px;
+                                  border-color: black;
+                                  color: white;
+                                  cursor: pointer;
+                                  padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
+                                  font-size: 18px; /* フォントサイズを小さくする */
+                                  &:hover {
+                                    background-color: darkred;
+                                  }
+                                `}
+                                data-testid={`delete-button-${item.id}`}
+                                onClick={() => handleDelete(item.id)}
+                              >
+                                削除
+                              </Button>
+                            </Box>
                           </Table.Cell>
                         </Table.Row>
                       ))}
@@ -173,7 +178,11 @@ function App() {
                     学習記録一覧
                   </Box>
                 </Heading>
-                <RegistrationDialog fetchData={fetchData} />
+                <RegistrationDialog
+                  button="registration"
+                  setData={setData}
+                  fetchData={fetchData}
+                />
                 <Heading as="h2" size="2xl" mb={4} mt={6}>
                   <p>データがありません</p>
                 </Heading>
@@ -185,6 +194,5 @@ function App() {
     </>
   );
 }
-
 
 export default App;
