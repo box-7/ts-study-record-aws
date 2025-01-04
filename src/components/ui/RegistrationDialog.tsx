@@ -323,7 +323,7 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                 background-color: darkgreen;
               }
             `}
-            data-testid="registration"
+            data-testid="modify-registration"
           >
             編集
           </Button>
