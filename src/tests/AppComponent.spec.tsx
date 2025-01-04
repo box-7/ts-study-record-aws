@@ -181,8 +181,28 @@ test('学習内容がないときに登録するとエラーが出る 未入力�
   });
 });
 
+it('モーダルのタイトルが記録編集であること', async () => {
+  render(
+    <ChakraProvider value={defaultSystem}>
+      <App />
+    </ChakraProvider>
+  );
+  await waitFor(() => {
+    expect(screen.getByText('学習記録一覧')).toBeInTheDocument();
+  });
+  await waitFor(() => {
+    const editButton = screen.getAllByRole('button', { name: '編集' })[0];
+    fireEvent.click(editButton);
+  });
+  // モーダルのタイトルが表示されるまで待機
+  await waitFor(() => {
+    expect(screen.getByText('記録編集')).toBeInTheDocument();
+  });
+});
+
 import * as recordLib from '@/lib/record.ts';
 import * as recordLibDelete from '@/lib/record_delete.ts';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('mockを使ったテスト', () => {
   // // @lib/record.ts
@@ -234,30 +254,34 @@ describe('mockを使ったテスト', () => {
 
   test('削除ができること', async () => {
     const { Record } = jest.requireActual('@/domain/record');
-    await waitFor(() => {
-      jest
-        .spyOn(recordLib, 'GetAllRecords')
-        .mockResolvedValueOnce([
-          new Record('5', 'Testtest5', 5),
-          new Record('10', 'Testtest10', 10),
-        ])
-        .mockResolvedValueOnce([
-          new Record('10', 'Testtest10', 10),
-          new Record('11', 'Testtest11', 11),
-          new Record('12', 'Testtest12', 12),
-        ]);
+    const validUUID1 = uuidv4();
+    const validUUID2 = uuidv4();
+    const validUUID3 = uuidv4();
+    const validUUID4 = uuidv4();
+    // await waitFor(() => {
+    jest
+      .spyOn(recordLib, 'GetAllRecords')
+      .mockResolvedValueOnce([
+        new Record(validUUID1, 'Testtest5', 5),
+        new Record(validUUID2, 'Testtest10', 10),
+      ])
+      .mockResolvedValueOnce([
+        new Record(validUUID2, 'Testtest10', 10),
+        new Record(validUUID3, 'Testtest11', 11),
+        new Record(validUUID4, 'Testtest12', 12),
+      ]);
 
-      // classを使わなくても、以下のように書ける
-      // .mockResolvedValueOnce(Promise.resolve([
-      //         { id: '5', title: 'Testtest5', time: 5 },
-      //         { id: '10', title: 'Testtest10', time: 10 }
-      //       ]))
-      //       .mockResolvedValueOnce(Promise.resolve([
-      //         { id: '10', title: 'Testtest10', time: 10 },
-      //         { id: '11', title: 'Testtest11', time: 11 },
-      //         { id: '12', title: 'Testtest12', time: 12 }
-      //       ]));
-    });
+    // classを使わなくても、以下のように書ける
+    // .mockResolvedValueOnce(Promise.resolve([
+    //         { id: '5', title: 'Testtest5', time: 5 },
+    //         { id: '10', title: 'Testtest10', time: 10 }
+    //       ]))
+    //       .mockResolvedValueOnce(Promise.resolve([
+    //         { id: '10', title: 'Testtest10', time: 10 },
+    //         { id: '11', title: 'Testtest11', time: 11 },
+    //         { id: '12', title: 'Testtest12', time: 12 }
+    //       ]));
+    // });
 
     await waitFor(() => {
       // export async function RecordDelete(id: string): Promise<void>のため、何も返さない（void）プロミスを返す
@@ -272,17 +296,14 @@ describe('mockを使ったテスト', () => {
       </ChakraProvider>
     );
 
-    // screen.debug();
     await waitFor(() => {
       const dialogTitle = screen.getByText('登録');
       expect(dialogTitle).toBeInTheDocument();
     });
-    //     screen.debug();
 
     const deleteButton = await waitFor(() =>
-      screen.getByTestId('delete-button-5')
+      screen.getByTestId(`delete-button-${validUUID1}`)
     );
-    // console.log("deleteButton", deleteButton)
 
     await waitFor(() => {
       fireEvent.click(deleteButton);
@@ -325,8 +346,7 @@ describe('mockを使ったテスト', () => {
   });
 });
 
-
-// // firebase.jsonの分析
+// // firebase.jsonの分析-----------------------------------------------------
 // {
 //         "hosting": {
 //         // Firebase Hosting にデプロイするディレクトリを指定
@@ -350,4 +370,3 @@ describe('mockを使ったテスト', () => {
 //           ]
 //         }
 // }
-

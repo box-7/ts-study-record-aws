@@ -386,7 +386,7 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         <DialogActionTrigger asChild>
                           <Button
                             type="submit"
-                            data-testid="submit"
+                            data-testid="submit-modify"
                             mr={4}
                             css={css`
                               background-color: deepskyblue; /* 明るい青色に変更 */
@@ -408,7 +408,7 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                       ) : (
                         <Button
                           type="submit"
-                          data-testid="submit-failure"
+                          data-testid="submit-failure-modify"
                           mr={4}
                           css={css`
                             background-color: deepskyblue; /* 明るい青色に変更 */
