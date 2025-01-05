@@ -75,56 +75,48 @@ function App() {
 
   return (
     <>
-      <Center>
-        <Flex justify="center" align="center">
-          <div>
-            {isLoading ? (
-              <Center height="100vh">
-                <VStack colorPalette="teal">
-                  <Spinner
-                    color="colorPalette.600"
-                    size="xl"
-                    role="spinnerStatus"
-                  />
-                  <Text color="colorPalette.600">Loading...</Text>
-                </VStack>
-              </Center>
-            ) : data && data.length > 0 ? (
-              <>
-                <Box p={4} pt={8}>
-                  <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
-                    <Box display="flex" alignItems="center">
-                      <FaBook style={{ marginRight: '8px' }} />
-                      学習記録一覧
+      <div>
+        {isLoading ? (
+          <Center height="100vh">
+            <VStack colorPalette="teal">
+              <Spinner
+                color="colorPalette.600"
+                size="xl"
+                role="spinnerStatus"
+              />
+              <Text color="colorPalette.600">Loading...</Text>
+            </VStack>
+          </Center>
+        ) : data && data.length > 0 ? (
+          <>
+            <Box p={4} pt={8}>
+              <Center>
+                <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
+                  <Box display="flex" alignItems="center">
+                    <FaBook style={{ marginRight: '8px' }} />
+                    学習記録一覧
+                    <Box ml={8}>
+                      <RegistrationDialog
+                        button="registration"
+                        setData={setData}
+                        fetchData={fetchData}
+                      />
                     </Box>
-                  </Heading>
+                  </Box>
+                </Heading>
+              </Center>
 
-                  <RegistrationDialog
-                    button="registration"
-                    setData={setData}
-                    fetchData={fetchData}
-                  />
-
-                  <Table.Root size="md" striped m={8} w="100%">
+              <Center>
+                <Box overflowX="auto" minWidth="600px">
+                  <Table.Root
+                    striped
+                    // interactive
+                  >
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColumnHeader
-                          css={css`
-                            //     font-weight: bold;
-                            font-size: 20px;
-                          `}
-                        >
-                          タイトル
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader
-                          css={css`
-                            //     font-weight: bold;
-                            font-size: 20px;
-                          `}
-                        >
-                          時間
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                        <Table.ColumnHeader>タイトル</Table.ColumnHeader>
+                        <Table.ColumnHeader>時間</Table.ColumnHeader>
+                        <Table.ColumnHeader></Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -167,32 +159,42 @@ function App() {
                       ))}
                     </Table.Body>
                   </Table.Root>
-                  <Heading as="h2" size="2xl" mb={4} mt={6}>
-                    合計時間: {totalTime} / 1000(h)
-                  </Heading>
                 </Box>
-              </>
-            ) : (
-              <>
+              </Center>
+              <Center>
+                <Heading as="h2" size="2xl" mb={4} mt={6}>
+                  合計時間: {totalTime} / 1000(h)
+                </Heading>
+              </Center>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box p={4} pt={8}>
+              <Center>
                 <Heading as="h1" fontSize="5xl" size="lg" mb={4}>
                   <Box display="flex" alignItems="center">
                     <FaBook style={{ marginRight: '8px' }} />
                     学習記録一覧
+                    <Box ml={4}>
+                      <RegistrationDialog
+                        button="registration"
+                        setData={setData}
+                        fetchData={fetchData}
+                      />
+                    </Box>
                   </Box>
                 </Heading>
-                <RegistrationDialog
-                  button="registration"
-                  setData={setData}
-                  fetchData={fetchData}
-                />
-                <Heading as="h2" size="2xl" mb={4} mt={6}>
-                  <p>データがありません</p>
-                </Heading>
-              </>
-            )}
-          </div>
-        </Flex>
-      </Center>
+              </Center>
+            </Box>
+            <Center>
+              <Heading as="h2" size="2xl" mb={4} mt={6}>
+                <p>データがありません</p>
+              </Heading>
+            </Center>
+          </>
+        )}
+      </div>
     </>
   );
 }
