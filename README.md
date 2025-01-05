@@ -23,6 +23,6 @@ time: number
 プロジェクトディレクトリに移動し、npm run dev を打ち込んでください。  
 以下画面が立ち上がります。  
 
-![image](https://github.com/user-attachments/assets/3385a618-6c5e-46e1-80b3-fd91bf4e1f6f)  
+![image](https://github.com/user-attachments/assets/61ac3072-ecb5-488c-a68a-4391eb5f1ed6)
 
 ![image](https://github.com/user-attachments/assets/95626a5d-da80-4793-b171-40567cfc8362)
