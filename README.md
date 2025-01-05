@@ -21,6 +21,7 @@ time: number
 
 # 起動の仕方
 プロジェクトディレクトリに移動し、npm run dev を打ち込んでください。  
+以下画面が立ち上がります。  
 
 ![image](https://github.com/user-attachments/assets/3385a618-6c5e-46e1-80b3-fd91bf4e1f6f)  
 
