@@ -1,50 +1,27 @@
-# React + TypeScript + Vite
+# 学習記録一覧アプリ
+学習一覧アプリです。
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# できること
+タイトル(学習内容)、時間(学習時間)の登録、編集、削除
+学習合計時間の表示
+(WEBエンジニアになるために必要な学習時間は1000時間と言われており、
+学習時間の合計を記録できます)
 
-Currently, two official plugins are available:
+# 環境設定方法
+supabaseに登録してください。
+https://supabase.com/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+supabaseでプロジェクトを作成し、以下カラムを作成してください。
+id: uuid
+title: string
+time: number
 
-## Expanding the ESLint configuration
+プロジェクト直下に「.envファイル」を作成してください。
+.envに、VITE_SUPABASE_URL、VITE_SUPABASE_ANON_KEYを設定してください。
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+# 起動の仕方
+プロジェクトディレクトリに移動し、npm run dev を打ち込んでください。
 
-- Configure the top-level `parserOptions` property like this:
+![image](https://github.com/user-attachments/assets/3385a618-6c5e-46e1-80b3-fd91bf4e1f6f)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+![image](https://github.com/user-attachments/assets/95626a5d-da80-4793-b171-40567cfc8362)
