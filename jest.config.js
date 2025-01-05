@@ -16,6 +16,14 @@ export default {
                 // LESS ファイルは、CSS（Cascading Style Sheets）を拡張したスタイルシート言語である LESS（Leaner Style Sheets）のファイル
                 "^@/(.*)$": "<rootDir>/src/$1", // エイリアス設定を追加
         },
+        reporters: [
+                "default",
+                ["jest-html-reporters", {
+                  "publicPath": "./html-report",
+                  "filename": "jest_html_reporters.html",
+                  "expand": true
+                }]
+              ]
 };
 
 // ^@/(.*)$:

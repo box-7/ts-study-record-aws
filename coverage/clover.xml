@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1736028337029" clover="3.2.0">
+  <project timestamp="1736028337029" name="All files">
+    <metrics statements="132" coveredstatements="122" conditionals="48" coveredconditionals="36" methods="24" coveredmethods="22" elements="204" coveredelements="180" complexity="0" loc="132" ncloc="132" packages="5" files="8" classes="8"/>
+    <package name="src">
+      <metrics statements="36" coveredstatements="33" conditionals="9" coveredconditionals="6" methods="9" coveredmethods="9"/>
+      <file name="App.tsx" path="/Users/torimototaishi/programming/sample-vite-ts/src/App.tsx">
+        <metrics statements="36" coveredstatements="33" conditionals="9" coveredconditionals="6" methods="9" coveredmethods="9"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="24" count="32" type="stmt"/>
+        <line num="25" count="32" type="stmt"/>
+        <line num="26" count="32" type="stmt"/>
+        <line num="27" count="32" type="stmt"/>
+        <line num="28" count="14" type="stmt"/>
+        <line num="30" count="14" type="stmt"/>
+        <line num="31" count="13" type="stmt"/>
+        <line num="32" count="13" type="stmt"/>
+        <line num="34" count="14" type="stmt"/>
+        <line num="37" count="32" type="stmt"/>
+        <line num="38" count="11" type="stmt"/>
+        <line num="50" count="32" type="stmt"/>
+        <line num="51" count="23" type="cond" truecount="1" falsecount="0"/>
+        <line num="52" count="23" type="stmt"/>
+        <line num="53" count="176" type="stmt"/>
+        <line num="56" count="23" type="stmt"/>
+        <line num="60" count="32" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="68" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="76" count="32" type="stmt"/>
+        <line num="130" count="303" type="stmt"/>
+        <line num="158" count="1" type="stmt"/>
+        <line num="198" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.components.ui">
+      <metrics statements="74" coveredstatements="69" conditionals="38" coveredconditionals="30" methods="10" coveredmethods="9"/>
+      <file name="RegistrationDialog.tsx" path="/Users/torimototaishi/programming/sample-vite-ts/src/components/ui/RegistrationDialog.tsx">
+        <metrics statements="52" coveredstatements="47" conditionals="32" coveredconditionals="24" methods="7" coveredmethods="6"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
+        <line num="63" count="344" type="stmt"/>
+        <line num="65" count="344" type="stmt"/>
+        <line num="66" count="186" type="cond" truecount="1" falsecount="0"/>
+        <line num="67" count="176" type="stmt"/>
+        <line num="68" count="176" type="stmt"/>
+        <line num="69" count="176" type="stmt"/>
+        <line num="73" count="344" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="80" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="86" count="344" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="93" count="344" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="96" count="1" type="cond" truecount="2" falsecount="1"/>
+        <line num="97" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="100" count="1" type="stmt"/>
+        <line num="101" count="1" type="stmt"/>
+        <line num="107" count="344" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="115" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="120" count="1" type="stmt"/>
+        <line num="131" count="1" type="stmt"/>
+        <line num="134" count="344" type="stmt"/>
+        <line num="135" count="1" type="stmt"/>
+        <line num="136" count="1" type="stmt"/>
+        <line num="137" count="1" type="stmt"/>
+        <line num="139" count="1" type="cond" truecount="2" falsecount="1"/>
+        <line num="140" count="0" type="stmt"/>
+        <line num="144" count="1" type="stmt"/>
+        <line num="146" count="1" type="stmt"/>
+        <line num="153" count="344" type="stmt"/>
+        <line num="154" count="344" type="stmt"/>
+        <line num="156" count="344" type="cond" truecount="2" falsecount="0"/>
+        <line num="157" count="30" type="stmt"/>
+        <line num="309" count="314" type="cond" truecount="1" falsecount="0"/>
+        <line num="310" count="314" type="stmt"/>
+        <line num="464" count="2" type="stmt"/>
+      </file>
+      <file name="close-button.tsx" path="/Users/torimototaishi/programming/sample-vite-ts/src/components/ui/close-button.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="12" count="36" type="stmt"/>
+      </file>
+      <file name="dialog.tsx" path="/Users/torimototaishi/programming/sample-vite-ts/src/components/ui/dialog.tsx">
+        <metrics statements="17" coveredstatements="17" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="21" count="344" type="stmt"/>
+        <line num="23" count="344" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="39" count="28" type="stmt"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="60" count="2" type="stmt"/>
+        <line num="61" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.domain">
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="record.ts" path="/Users/torimototaishi/programming/sample-vite-ts/src/domain/record.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="227" type="stmt"/>
+        <line num="4" count="227" type="stmt"/>
+        <line num="5" count="227" type="stmt"/>
+        <line num="14" count="212" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.lib">
+      <metrics statements="12" coveredstatements="10" conditionals="1" coveredconditionals="0" methods="3" coveredmethods="2"/>
+      <file name="record.ts" path="/Users/torimototaishi/programming/sample-vite-ts/src/lib/record.ts">
+        <metrics statements="9" coveredstatements="8" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="10" type="stmt"/>
+        <line num="10" count="9" type="cond" truecount="0" falsecount="1"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="15" count="9" type="stmt"/>
+        <line num="16" count="212" type="stmt"/>
+        <line num="19" count="9" type="stmt"/>
+      </file>
+      <file name="record_delete.ts" path="/Users/torimototaishi/programming/sample-vite-ts/src/lib/record_delete.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utils">
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="supabase.ts" path="/Users/torimototaishi/programming/sample-vite-ts/src/utils/supabase.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
