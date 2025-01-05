@@ -79,14 +79,16 @@ function App() {
         <Flex justify="center" align="center">
           <div>
             {isLoading ? (
-              <VStack colorPalette="teal">
-                <Spinner
-                  color="colorPalette.600"
-                  size="xl"
-                  role="spinnerStatus"
-                />
-                <Text color="colorPalette.600">Loading...</Text>
-              </VStack>
+              <Center height="100vh">
+                <VStack colorPalette="teal">
+                  <Spinner
+                    color="colorPalette.600"
+                    size="xl"
+                    role="spinnerStatus"
+                  />
+                  <Text color="colorPalette.600">Loading...</Text>
+                </VStack>
+              </Center>
             ) : data && data.length > 0 ? (
               <>
                 <Box p={4} pt={8}>
