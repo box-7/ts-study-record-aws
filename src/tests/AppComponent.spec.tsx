@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react';
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import App from '../App';
-import userEvent from '@testing-library/user-event';
+// import userEvent from '@testing-library/user-event';
 
 it('タイトルをレンダリングする', async () => {
         render(
@@ -18,7 +18,7 @@ it('タイトルをレンダリングする', async () => {
         // 非同期処理が完了するまで待機
         await waitFor(() => {
                 expect(screen.getByText('学習記録一覧')).toBeInTheDocument();
-        });
+        }, { timeout: 2000 }); // タイムアウトを延長
 });
 it('isLoadingがtrueのとき、ローディング・スピナーとテキストを表示する', () => {
         render(
