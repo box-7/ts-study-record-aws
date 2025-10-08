@@ -1,3 +1,7 @@
+// jest.config.js
+// Jest テストランナーの設定ファイルで、Jest がどのようにテストを実行するかを制御
+// このファイルを使用して、テスト環境、トランスフォーマー、モジュールの解決方法、テストの実行方法などを設定
+
 export default {
         preset: "ts-jest",
         setupFiles: ["dotenv/config"],

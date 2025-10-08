@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
 // import './App.css'
 // import supabase from './utils/supabase';
 import { useEffect } from 'react';
@@ -9,7 +9,7 @@ import { Record } from './domain/record';
 import { GetAllRecords } from '@/lib/record';
 import { RecordDelete } from './lib/record_delete';
 
-import { Spinner, Text, VStack, Center, Flex } from '@chakra-ui/react';
+import { Spinner, Text, VStack, Center } from '@chakra-ui/react';
 import { Box, Button, Heading, Table } from '@chakra-ui/react';
 
 // EmotionというCSS-in-JSライブラリからcss関数をインポートするためのコード
