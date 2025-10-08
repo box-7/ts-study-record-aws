@@ -1,23 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react';
-// import './App.css'
-// import supabase from './utils/supabase';
 import { useEffect } from 'react';
-
-// import { useForm, SubmitHandler } from 'react-hook-form';
 import { Record } from './domain/record';
 import { GetAllRecords } from '@/lib/record';
 import { RecordDelete } from './lib/record_delete';
-
 import { Spinner, Text, VStack, Center } from '@chakra-ui/react';
 import { Box, Button, Heading, Table } from '@chakra-ui/react';
-
-// EmotionというCSS-in-JSライブラリからcss関数をインポートするためのコード
-// JavaScript内でCSSスタイルを定義し、Reactコンポーネントに適用できる
 import { css } from '@emotion/react';
-
 import RegistrationDialog from './components/ui/RegistrationDialog';
-
 import { FaBook } from 'react-icons/fa';
 
 function App() {
@@ -26,7 +16,6 @@ function App() {
         const [isLoading, setIsLoading] = useState(true);
         const fetchData = async () => {
                 const getAllRecordMethod = async () => {
-                        // supabaseを呼び出す処理
                         const todoRecord = await GetAllRecords();
                         setData(todoRecord);
                         setIsLoading(false);
@@ -36,15 +25,6 @@ function App() {
 
         useEffect(() => {
                 fetchData();
-                // fetchData().then(data => {
-                //         // reduce: 配列の各要素に対して処理を行い、最終的に一つの値を返すメソッド
-                //         // acc: 累積値を表す。初期値は0で、各要素を処理するたびにこの値に新しい値が加算される
-                //         // record: 配列の現在の要素を表す変数
-                //         // acc + parseInt(record.time): 現在の累積値accに、現在の要素のtimeの値を加算した新しい累積値を返す
-                //         // 0: reduceメソッドの第二引数で、初期値を指定
-                //         const calculatedTotalTime = data.reduce((acc, record) => acc + parseInt(record.time), 0);
-                //         setTotalTime(calculatedTotalTime);
-                // });
         }, []);
 
         useEffect(() => {
