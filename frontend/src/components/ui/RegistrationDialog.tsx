@@ -1,53 +1,48 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import {
         DialogBody,
-        DialogCloseTrigger,
+        // DialogCloseTrigger,
         DialogContent,
         DialogHeader,
         DialogRoot,
         DialogTitle,
         DialogTrigger,
 } from '@/components/ui/dialog';
-
 import { useForm, SubmitHandler } from 'react-hook-form';
-
 import { Record } from '@/domain/record';
-import supabase from '@/utils/supabase';
-// import { css } from '@emotion/react';
-import { GetAllRecords } from '@/lib/record.ts';
+import { UpdateRecord, GetAllRecords } from "@/lib/record";
 import { CreateRecord as addTodoApi } from "@/lib/record.ts";
+
 interface RegistrationDialogProps {
         item?: Record;
         button?: string;
-        // Dispatch<SetStateAction<Record[]>>型は、ReactのuseStateフックによって提供される状態更新関数の型。状態を更新するための関数を表す
-        // ?を使ったオプショナルだとダメ
         setData: Dispatch<SetStateAction<Record[]>>;
-        // どの書き方でもOK  // fetchData: () => Promise<void>;  // fetchData: () => ReactNode;
         fetchData: () => void;
 }
 
+interface FormValues {
+        studyId: string;
+        studyContent: string;
+        studyHour: number | null;
+}
+
 const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
-        // const RegistrationDialog = ({ fetchData }:RegistrationDialogProps) => { // この書き方でもOK
         item,
         button,
         setData,
         fetchData,
 }) => {
-        interface FormValues {
-                studyId: string;
-                studyContent: string;
-                studyHour: number | null;
-        }
-
+        const [isOpen, setIsOpen] = useState(false);
+        // react-hook-form は、Reactでフォームを簡単・効率的に扱うためのライブラリ
+        // useForm というフックを使って、フォームの状態管理やバリデーションを行う
         const {
-                register,
-                handleSubmit,
-                formState: { errors },
-                reset,
-                // watch,
-                setValue,
+                register,         // input要素をフォーム管理に登録
+                handleSubmit,     // 送信時のバリデーションとデータ取得
+                formState: { errors }, // バリデーションエラー情報
+                reset,            // フォーム値のリセット
+                setValue,         // フォーム値の手動セット
         } = useForm<FormValues>();
 
         useEffect(() => {
@@ -57,6 +52,16 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         setValue('studyHour', item.time);
                 }
         }, [item, setValue]);
+
+        useEffect(() => {
+                if (isOpen && item) {
+                        reset({
+                                studyId: item.id,
+                                studyContent: item.title,
+                                studyHour: item.time,
+                        });
+                }
+        }, [isOpen, item, reset]);
 
         // フォーム送信時に呼ぶ関数
         const addTodo = async (title: string, time: number) => {
@@ -87,7 +92,7 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
         const onSubmit: SubmitHandler<FormValues> = async (data) => {
                 const studyContent = data.studyContent;
                 // const studyHour = data.studyHour;
-                 const studyHour = Number(data.studyHour); // number に変換
+                const studyHour = Number(data.studyHour); // number に変換
                 if (studyHour === null || isNaN(studyHour)) {
                         return studyContent && studyHour;
                 }
@@ -97,39 +102,39 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         studyContent: '',
                         studyHour: null,
                 });
+                setIsOpen(false); // モーダルを閉じる
         };
 
         const updateRecord = async (id: string, title: string, time: number) => {
-                // Supabaseを使用してレコードを更新する処理
-                const { error } = await supabase
-                        .from('study-record')
-                        .update({ title, time })
-                        .eq('id', id)
-                        .select();
+                try {
+                        // backend の PUT /records/:id を呼び出す
+                        await UpdateRecord(id, title, time);
 
-                if (error) {
-                        throw error;
+                        // 更新後に全データを再取得
+                        const todoRecord = await GetAllRecords();
+                        setData(todoRecord);
+                        fetchData();
+                } catch (error) {
+                        if (error instanceof Error) {
+                                alert(error.message);
+                        } else {
+                                alert("An unknown error occurred");
+                        }
                 }
-
-                const todoRecord = await GetAllRecords();
-                setData(todoRecord);
-                // ローカルの状態を更新する処理
-                // setData((prevRecords) => {
-                //         const updatedRecords = prevRecords.map((record) =>
-                //                 record.id === id ? { ...record, title, time } : record
-                //         );
-                //         console.log('Updated Records:', updatedRecords);
-
-                //         return updatedRecords;
-                // });
-
-                fetchData();
         };
 
+        // dataには以下が入っている
+        // setValue('studyId', item.id);
+        // setValue('studyContent', item.title);
+        // setValue('studyHour', item.time);
         const onSubmitModify: SubmitHandler<FormValues> = async (data) => {
-                const studyId = data.studyId;
+                // const studyId = data.studyId;
+                const studyId = String(data.studyId); // string に変換
                 const studyContent = data.studyContent;
-                const studyHour = data.studyHour;
+                const studyHour = Number(data.studyHour); // number に変換
+
+                console.log("onSubmitModify called with:", { studyId, studyContent, studyHour });
+                console.log(typeof studyHour);
 
                 if (studyHour === null || isNaN(studyHour)) {
                         return;
@@ -142,16 +147,16 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         studyContent: '',
                         studyHour: null,
                 });
+                setIsOpen(false); // モーダルを閉じる
         };
-
-        // 監視用のwatchを定義
-        // const studyContent = watch('studyContent', '');
-        // const studyHour = watch('studyHour', null);
-
 
         if (button === 'registration') {
                 return (
-                        <DialogRoot placement="center">
+                        <DialogRoot
+                                placement="center"
+                                open={isOpen}
+                                onOpenChange={(details) => setIsOpen(details.open)}
+                        >
                                 <DialogTrigger asChild>
                                         <button
                                                 data-testid="registration"
@@ -212,8 +217,12 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
 
                                                                         <button
                                                                                 type="button"
-                                                                                onClick={onClickCancelRecord}
+                                                                                onClick={() => {
+                                                                                        onClickCancelRecord();
+                                                                                        setIsOpen(false);
+                                                                                }}
                                                                                 className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
+
                                                                         >
                                                                                 キャンセル
                                                                         </button>
@@ -221,14 +230,16 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                                                         </div>
                                                 </form>
                                         </DialogBody>
-
-                                        <DialogCloseTrigger onClick={onClickCancelRecord} />
                                 </DialogContent>
                         </DialogRoot>
                 );
         } else if (button === 'modifcation') {
                 return (
-                        <DialogRoot placement="center">
+                        <DialogRoot
+                                placement="center"
+                                open={isOpen}
+                                onOpenChange={(details) => setIsOpen(details.open)}
+                        >
                                 <DialogTrigger asChild>
                                         <button
                                                 data-testid="modify-registration"
@@ -245,11 +256,13 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
 
                                         <DialogBody>
                                                 <form onSubmit={handleSubmit(onSubmitModify)}>
+
                                                         <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
                                                                 <div className="w-full">
                                                                         <label htmlFor="studyContentModify" className="block mb-1 font-medium">
                                                                                 学習内容
                                                                         </label>
+
                                                                         <input
                                                                                 id="studyContentModify"
                                                                                 type="text"
@@ -290,7 +303,9 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
 
                                                                         <button
                                                                                 type="button"
-                                                                                onClick={onClickCancelRecord}
+                                                                                onClick={() => {
+                                                                                        setIsOpen(false);
+                                                                                }}
                                                                                 className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
                                                                         >
                                                                                 キャンセル
@@ -299,8 +314,6 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                                                         </div>
                                                 </form>
                                         </DialogBody>
-
-                                        <DialogCloseTrigger onClick={onClickCancelRecord} />
                                 </DialogContent>
                         </DialogRoot>
                 );
