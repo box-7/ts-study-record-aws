@@ -2,32 +2,32 @@
 import React, { useEffect, ReactNode } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import {
-        DialogActionTrigger,
+        // DialogActionTrigger,
         DialogBody,
         DialogCloseTrigger,
         DialogContent,
-        DialogFooter,
+        // DialogFooter,
         DialogHeader,
         DialogRoot,
         DialogTitle,
         DialogTrigger,
 } from '@/components/ui/dialog';
 
-import {
-        Box,
-        Button,
-        Heading,
-        Table,
-        Input,
-        Stack,
-        NumberInputLabel,
-        Text,
-} from '@chakra-ui/react';
+// import {
+//         Box,
+//         Button,
+//         Heading,
+//         Table,
+//         Input,
+//         Stack,
+//         NumberInputLabel,
+//         Text,
+// } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { Record } from '@/domain/record';
 import supabase from '@/utils/supabase';
-import { css } from '@emotion/react';
+// import { css } from '@emotion/react';
 import { GetAllRecords } from '@/lib/record';
 
 interface RegistrationDialogProps {
@@ -58,7 +58,7 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                 handleSubmit,
                 formState: { errors },
                 reset,
-                watch,
+                // watch,
                 setValue,
         } = useForm<FormValues>();
 
@@ -150,315 +150,168 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
         };
 
         // 監視用のwatchを定義
-        const studyContent = watch('studyContent', '');
-        const studyHour = watch('studyHour', null);
+        // const studyContent = watch('studyContent', '');
+        // const studyHour = watch('studyHour', null);
+
 
         if (button === 'registration') {
                 return (
-                        <DialogRoot placement={'center'}>
+                        <DialogRoot placement="center">
                                 <DialogTrigger asChild>
-                                        <Button
-                                                css={css`
-                                                background-color: deepskyblue; /* 明るい青色に変更 */
-                                                border-width: 1px;
-                                                border-color: black;
-                                                color: white;
-                                                cursor: pointer;
-                                                padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                font-size: 18px; /* フォントサイズを小さくする */
-                                                &:hover {
-                                                        background-color: darkslategray;
-                                                }
-                                                `}
-                                                                                        data-testid="registration"
+                                        <button
+                                                data-testid="registration"
+                                                className="bg-sky-500 text-white border border-black px-2 py-1 text-sm cursor-pointer hover:bg-slate-800 transition-colors rounded"
                                         >
                                                 登録
-                                        </Button>
+                                        </button>
                                 </DialogTrigger>
-                                <DialogContent>
+                                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
                                         <DialogHeader>
-                                                <DialogTitle>新規登録</DialogTitle>
+                                                <DialogTitle className="text-xl font-bold">新規登録</DialogTitle>
                                         </DialogHeader>
+
                                         <DialogBody>
-                                                <div>
-                                                        {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
-                                        handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
-                                        二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
-                                                        <form onSubmit={handleSubmit(onSubmit)}>
-                                                                <Box p={4} borderWidth={1} borderRadius="lg" boxShadow="lg">
-                                                                        <Stack gap="4" align="flex-start" maxW="sm">
-                                                                                <div style={{ width: '100%' }}>
-                                                                                        <label htmlFor="studyContent" css={css``}>
-                                                                                                学習内容
-                                                                                        </label>
-                                                                                        <Input
-                                                                                                id="studyContent"
-                                                                                                type="text"
-                                                                                                width="100%"
-                                                                                                {...register('studyContent', {
-                                                                                                        required: '内容の入力は必須です',
-                                                                                                })}
-                                                                                        />
-                                                                                        {errors['studyContent'] && (
-                                                                                                <Text color="red.500">
-                                                                                                        {errors['studyContent'].message}
-                                                                                                </Text>
-                                                                                        )}
-                                                                                </div>
+                                                <form onSubmit={handleSubmit(onSubmit)}>
+                                                        <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
+                                                                <div className="w-full">
+                                                                        <label htmlFor="studyContent" className="block mb-1 font-medium">
+                                                                                学習内容
+                                                                        </label>
+                                                                        <input
+                                                                                id="studyContent"
+                                                                                type="text"
+                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-sky-300"
+                                                                                {...register('studyContent', { required: '内容の入力は必須です' })}
+                                                                        />
+                                                                        {errors.studyContent && (
+                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyContent.message}</p>
+                                                                        )}
+                                                                </div>
 
-                                                                                <div>
-                                                                                        <label htmlFor="studyHour" css={css``}>
-                                                                                                学習時間
-                                                                                        </label>
-                                                                                        <Input
-                                                                                                id="studyHour"
-                                                                                                type="number"
-                                                                                                // width="60%"
-                                                                                                {...register('studyHour', {
-                                                                                                        required: '時間の入力は必須です',
-                                                                                                        min: {
-                                                                                                                value: 0,
-                                                                                                                message: '時間は0以上である必要があります',
-                                                                                                        },
-                                                                                                })}
-                                                                                        />
-                                                                                        {errors['studyHour'] && (
-                                                                                                <Text color="red.500">
-                                                                                                        {errors['studyHour'].message}
-                                                                                                </Text>
-                                                                                        )}
-                                                                                </div>
+                                                                <div>
+                                                                        <label htmlFor="studyHour" className="block mb-1 font-medium">
+                                                                                学習時間
+                                                                        </label>
+                                                                        <input
+                                                                                id="studyHour"
+                                                                                type="number"
+                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-sky-300"
+                                                                                {...register('studyHour', {
+                                                                                        required: '時間の入力は必須です',
+                                                                                        min: { value: 0, message: '時間は0以上である必要があります' },
+                                                                                })}
+                                                                        />
+                                                                        {errors.studyHour && (
+                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyHour.message}</p>
+                                                                        )}
+                                                                </div>
 
-                                                                                <div>
-                                                                                        {studyContent && studyHour && studyHour >= 0 ? (
-                                                                                                <DialogActionTrigger asChild>
-                                                                                                        <Button
-                                                                                                                type="submit"
-                                                                                                                data-testid="submit"
-                                                                                                                mr={4}
-                                                                                                                css={css`
-                                                                                                                        background-color: deepskyblue; /* 明るい青色に変更 */
-                                                                                                                        border-width: 1px;
-                                                                                                                        border-color: black;
-                                                                                                                        color: white;
-                                                                                                                        cursor: pointer;
-                                                                                                                        padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                                        /* font-size: 12px;フォントサイズを小さくする */
-                                                                                                                        width: 80px;
-                                                                                                                        &:hover {
-                                                                                                                                background-color: darkslategray;
-                                                                                                                        }
-                                                                                                                        `}
-                                                                                                        >
-                                                                                                                保存
-                                                                                                        </Button>
-                                                                                                </DialogActionTrigger>
-                                                                                        ) : (
-                                                                                                <Button
-                                                                                                        type="submit"
-                                                                                                        data-testid="submit-failure"
-                                                                                                        mr={4}
-                                                                                                        css={css`
-                                                                                                        background-color: deepskyblue; /* 明るい青色に変更 */
-                                                                                                        border-width: 1px;
-                                                                                                        border-color: black;
-                                                                                                        color: white;
-                                                                                                        cursor: pointer;
-                                                                                                        padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                        /* font-size: 12px; フォントサイズを小さくする */
-                                                                                                        width: 80px;
-                                                                                                        &:hover {
-                                                                                                        background-color: darkslategray;
-                                                                                                        }
-                                                                                                        `}
-                                                                                                >
-                                                                                                        保存
-                                                                                                </Button>
-                                                                                        )}
+                                                                <div className="flex space-x-2">
+                                                                        <button
+                                                                                type="submit"
+                                                                                data-testid="submit"
+                                                                                className="bg-sky-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-slate-800 transition-colors rounded"
+                                                                        >
+                                                                                保存
+                                                                        </button>
 
-                                                                                        <DialogActionTrigger asChild>
-                                                                                                <Button
-                                                                                                        css={css`
-                                                                                                        background-color: red;
-                                                                                                        border-width: 1px;
-                                                                                                        border-color: black;
-                                                                                                        color: white;
-                                                                                                        cursor: pointer;
-                                                                                                        padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                        font-size: 12px; /* フォントサイズを小さくする */
-                                                                                                        width: 80px;
-                                                                                                        &:hover {
-                                                                                                        background-color: darkred;
-                                                                                                        }
-                                                                                                        `}
-                                                                                                        onClick={onClickCancelRecord}
-                                                                                                >
-                                                                                                        キャンセル
-                                                                                                </Button>
-                                                                                        </DialogActionTrigger>
-                                                                                </div>
-                                                                        </Stack>
-                                                                </Box>
-                                                        </form>
-                                                </div>
+                                                                        <button
+                                                                                type="button"
+                                                                                onClick={onClickCancelRecord}
+                                                                                className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
+                                                                        >
+                                                                                キャンセル
+                                                                        </button>
+                                                                </div>
+                                                        </div>
+                                                </form>
                                         </DialogBody>
+
                                         <DialogCloseTrigger onClick={onClickCancelRecord} />
                                 </DialogContent>
                         </DialogRoot>
                 );
         } else if (button === 'modifcation') {
                 return (
-                        <DialogRoot placement={'center'}>
+                        <DialogRoot placement="center">
                                 <DialogTrigger asChild>
-                                        <Button
-                                                css={css`
-                                                background-color: limegreen;
-                                                border-width: 1px;
-                                                border-color: black;
-                                                color: white;
-                                                cursor: pointer;
-                                                padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                font-size: 18px; /* フォントサイズを小さくする */
-                                                &:hover {
-                                                        background-color: darkgreen;
-                                                }
-                                                `}
+                                        <button
                                                 data-testid="modify-registration"
+                                                className="bg-lime-500 text-white border border-black px-3 py-1.5 text-lg cursor-pointer hover:bg-green-800 transition-colors rounded"
                                         >
                                                 編集
-                                        </Button>
+                                        </button>
                                 </DialogTrigger>
-                                <DialogContent>
+
+                                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
                                         <DialogHeader>
-                                                <DialogTitle>記録編集</DialogTitle>
+                                                <DialogTitle className="text-xl font-bold">記録編集</DialogTitle>
                                         </DialogHeader>
+
                                         <DialogBody>
-                                                <div>
-                                                        {/* 最初の onSubmit: フォーム送信時に実行されるイベントハンドラ
-                                        handleSubmit は、React Hook Form の関数で、フォームの送信を処理するために使用される
-                                        二番目の onSubmit: バリデーション成功後にデータを処理するユーザー定義関数 */}
-                                                        <form onSubmit={handleSubmit(onSubmitModify)}>
-                                                                <Box p={4} borderWidth={1} borderRadius="lg" boxShadow="lg">
-                                                                        <Stack gap="4" align="flex-start" maxW="sm">
-                                                                                <div style={{ width: '100%' }}>
-                                                                                        <label htmlFor="studyContent" css={css``}>
-                                                                                                学習内容
-                                                                                        </label>
-                                                                                        <Input
-                                                                                                id="studyContent"
-                                                                                                type="text"
-                                                                                                width="100%"
-                                                                                                {...register('studyContent', {
-                                                                                                        required: '内容の入力は必須です',
-                                                                                                })}
-                                                                                        />
-                                                                                        {errors['studyContent'] && (
-                                                                                                <Text color="red.500">
-                                                                                                        {errors['studyContent'].message}
-                                                                                                </Text>
-                                                                                        )}
-                                                                                </div>
+                                                <form onSubmit={handleSubmit(onSubmitModify)}>
+                                                        <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
+                                                                <div className="w-full">
+                                                                        <label htmlFor="studyContentModify" className="block mb-1 font-medium">
+                                                                                学習内容
+                                                                        </label>
+                                                                        <input
+                                                                                id="studyContentModify"
+                                                                                type="text"
+                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-lime-300"
+                                                                                {...register('studyContent', { required: '内容の入力は必須です' })}
+                                                                        />
+                                                                        {errors.studyContent && (
+                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyContent.message}</p>
+                                                                        )}
+                                                                </div>
 
-                                                                                <div>
-                                                                                        <label htmlFor="studyHour" css={css``}>
-                                                                                                学習時間
-                                                                                        </label>
-                                                                                        <Input
-                                                                                                id="studyHour"
-                                                                                                type="number"
-                                                                                                {...register('studyHour', {
-                                                                                                        required: '時間の入力は必須です',
-                                                                                                        min: {
-                                                                                                                value: 0,
-                                                                                                                message: '時間は0以上である必要があります',
-                                                                                                        },
-                                                                                                })}
-                                                                                        />
-                                                                                        {errors['studyHour'] && (
-                                                                                                <Text color="red.500">
-                                                                                                        {errors['studyHour'].message}
-                                                                                                </Text>
-                                                                                        )}
-                                                                                </div>
+                                                                <div>
+                                                                        <label htmlFor="studyHourModify" className="block mb-1 font-medium">
+                                                                                学習時間
+                                                                        </label>
+                                                                        <input
+                                                                                id="studyHourModify"
+                                                                                type="number"
+                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-lime-300"
+                                                                                {...register('studyHour', {
+                                                                                        required: '時間の入力は必須です',
+                                                                                        min: { value: 0, message: '時間は0以上である必要があります' },
+                                                                                })}
+                                                                        />
+                                                                        {errors.studyHour && (
+                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyHour.message}</p>
+                                                                        )}
+                                                                </div>
 
-                                                                                <div>
-                                                                                        {studyContent && studyHour && studyHour >= 0 ? (
-                                                                                                <DialogActionTrigger asChild>
-                                                                                                        <Button
-                                                                                                                type="submit"
-                                                                                                                data-testid="submit-modify"
-                                                                                                                mr={4}
-                                                                                                                css={css`
-                                                                                                                background-color: deepskyblue; /* 明るい青色に変更 */
-                                                                                                                border-width: 1px;
-                                                                                                                border-color: black;
-                                                                                                                color: white;
-                                                                                                                cursor: pointer;
-                                                                                                                padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                                /* font-size: 12px;フォントサイズを小さくする */
-                                                                                                                width: 80px;
-                                                                                                                &:hover {
-                                                                                                                        background-color: darkslategray;
-                                                                                                                }
-                                                                                                                `}
-                                                                                                        >
-                                                                                                                保存
-                                                                                                        </Button>
-                                                                                                </DialogActionTrigger>
-                                                                                        ) : (
-                                                                                                <Button
-                                                                                                        type="submit"
-                                                                                                        data-testid="submit-failure-modify"
-                                                                                                        mr={4}
-                                                                                                        css={css`
-                                                                                                        background-color: deepskyblue; /* 明るい青色に変更 */
-                                                                                                        border-width: 1px;
-                                                                                                        border-color: black;
-                                                                                                        color: white;
-                                                                                                        cursor: pointer;
-                                                                                                        padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                        /* font-size: 12px; フォントサイズを小さくする */
-                                                                                                        width: 80px;
-                                                                                                        &:hover {
-                                                                                                        background-color: darkslategray;
-                                                                                                        }
-                                                                                                        `}
-                                                                                                >
-                                                                                                        保存
-                                                                                                </Button>
-                                                                                        )}
+                                                                <div className="flex space-x-2">
+                                                                        <button
+                                                                                type="submit"
+                                                                                data-testid="submit-modify"
+                                                                                className="bg-sky-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-slate-800 transition-colors rounded"
+                                                                        >
+                                                                                保存
+                                                                        </button>
 
-                                                                                        <DialogActionTrigger asChild>
-                                                                                                <Button
-                                                                                                        css={css`
-                                                                                                        background-color: firebrick;
-                                                                                                        border-width: 1px;
-                                                                                                        border-color: black;
-                                                                                                        color: white;
-                                                                                                        cursor: pointer;
-                                                                                                        padding: 6px 10px; /* ボタンを小さくするためにパディングを調整 */
-                                                                                                        font-size: 12px; /* フォントサイズを小さくする */
-                                                                                                        width: 80px;
-                                                                                                        &:hover {
-                                                                                                        background-color: darkred;
-                                                                                                        }
-                                                                                                        `}
-                                                                                                        onClick={onClickCancelRecord}
-                                                                                                >
-                                                                                                        キャンセル
-                                                                                                </Button>
-                                                                                        </DialogActionTrigger>
-                                                                                </div>
-                                                                        </Stack>
-                                                                </Box>
-                                                        </form>
-                                                </div>
+                                                                        <button
+                                                                                type="button"
+                                                                                onClick={onClickCancelRecord}
+                                                                                className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
+                                                                        >
+                                                                                キャンセル
+                                                                        </button>
+                                                                </div>
+                                                        </div>
+                                                </form>
                                         </DialogBody>
+
                                         <DialogCloseTrigger onClick={onClickCancelRecord} />
                                 </DialogContent>
                         </DialogRoot>
                 );
         }
+
+
 };
 
 export default RegistrationDialog;
