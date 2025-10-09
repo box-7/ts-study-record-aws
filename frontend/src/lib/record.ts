@@ -1,16 +1,15 @@
 import axios from "axios";
 import { Record } from "../domain/record";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 export async function GetAllRecords(): Promise<Record[]> {
         try {
-                const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
-                // Axiosの型は response.data が any にならないように定義するのも可能
                 const response = await axios.get<{ id: string; title: string; time: number }[]>(`${API_URL}/records`);
 
-                const data: Record[] = response.data.map((item) => {
-                        return Record.newRecord(item.id, item.title, item.time);
-                });
+                const data: Record[] = response.data.map((item) =>
+                        Record.newRecord(item.id, item.title, item.time)
+                );
 
                 return data;
         } catch (err: unknown) {
@@ -22,23 +21,36 @@ export async function GetAllRecords(): Promise<Record[]> {
         }
 }
 
-// import { Record } from "../domain/record";
-// import supabase from "../utils/supabase";
+/**
+ * 新しいレコードを追加
+ * @param title 学習内容
+ * @param time 学習時間
+ * @returns 追加されたRecord
+ */
+export async function addTodo(title: string, time: number): Promise<Record> {
+        try {
+                console.log("API_URL:", API_URL);
 
-//         // ジェネリック型引数として使用され、useStateフックが管理する状態の型
-//         // useStateフックの型引数として、Record型の配列を指定
-//         // data状態がRecordオブジェクトの配列であることが保証される
-// export async function GetAllRecords(): Promise<Record[]> {
-//         const response = await supabase.from("study-record").select("*")
-//         .order("created_at", { ascending: true }); // created_atフィールドで並べ替え;
-//         if (response.error) {
-//                 throw new Error(response.error.message);
-//         }
+                const response = await axios.post<{ id: string; title: string; time: number }>(
+                        `${API_URL}/records`,
+                        { title, time }
+                );
 
-//         // console.log("lib/record.ts response", response);
-//         const data = response.data.map((todo) => {
-//                 return Record.newRecord(todo.id, todo.title, todo.time);
-//         });
+                // サーバーから返ってきたデータでRecordを生成
+                console.log("Response data:", response.data); // 追加
+                return Record.newRecord(response.data.id, response.data.title, response.data.time);
 
-//         return data; ;
-// }
+        } catch (err: unknown) {
+                if (axios.isAxiosError(err)) {
+                        console.error("Axios error response:", err.response?.data);
+                        console.error("Status code:", err.response?.status);
+                        console.error("Headers:", err.response?.headers);
+                        console.error("Message:", err.message);
+                } else if (err instanceof Error) {
+                        console.error("Error:", err.message);
+                } else {
+                        console.error("Unknown error:", err);
+                }
+                throw err; // 必要なら再スロー
+        }
+}

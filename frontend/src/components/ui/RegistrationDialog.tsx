@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import {
         // DialogActionTrigger,
@@ -29,7 +29,7 @@ import { Record } from '@/domain/record';
 import supabase from '@/utils/supabase';
 // import { css } from '@emotion/react';
 import { GetAllRecords } from '@/lib/record';
-
+import { addTodo as addTodoApi } from "../../lib/record";
 interface RegistrationDialogProps {
         item?: Record;
         button?: string;
@@ -70,17 +70,23 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                 }
         }, [item, setValue]);
 
+        // フォーム送信時に呼ぶ関数
         const addTodo = async (title: string, time: number) => {
-                const newRecord = new Record('', title, time);
-                // データベース操作が成功した場合、dataオブジェクトに操作の結果が含まれる  // const { data, error } = await supabase
-                const { error } = await supabase
-                        .from('study-record')
-                        .insert([{ title: newRecord.title, time: newRecord.time }])
-                        .select();
-                if (error) {
-                        throw error;
+                try {
+                        // record.ts の addTodo を呼び出す
+                        await addTodoApi(title, time);
+
+                        // データを再取得してUI更新
+                        fetchData();
+                } catch (error) {
+                        if (error instanceof Error) {
+                                console.error("レコード追加エラー:", error.message);
+                                alert("レコードの追加に失敗しました");
+                        } else {
+                                console.error("Unknown error");
+                                alert("レコードの追加に失敗しました");
+                        }
                 }
-                fetchData();
         };
 
         const onClickCancelRecord = () => {
@@ -92,7 +98,8 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
 
         const onSubmit: SubmitHandler<FormValues> = async (data) => {
                 const studyContent = data.studyContent;
-                const studyHour = data.studyHour;
+                // const studyHour = data.studyHour;
+                 const studyHour = Number(data.studyHour); // number に変換
                 if (studyHour === null || isNaN(studyHour)) {
                         return studyContent && studyHour;
                 }
