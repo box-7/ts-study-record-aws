@@ -25,11 +25,11 @@
                 "types": ["node", "jest", "@testing-library/jest-dom"],
                 "baseUrl": ".",
                 "paths": {
-                        "@/*": ["./src/*"]
+                        "@/*": ["frontend/src/*"]
                 }
         },
         // コンパイル対象のファイルやディレクトリを指定
-        "include": ["src"],
+        "include": ["frontend/src"],
 }
 
 // compilerOptions:
