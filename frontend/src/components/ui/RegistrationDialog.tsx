@@ -2,34 +2,22 @@
 import React, { useEffect } from 'react';
 import { Dispatch, SetStateAction } from 'react';
 import {
-        // DialogActionTrigger,
         DialogBody,
         DialogCloseTrigger,
         DialogContent,
-        // DialogFooter,
         DialogHeader,
         DialogRoot,
         DialogTitle,
         DialogTrigger,
 } from '@/components/ui/dialog';
 
-// import {
-//         Box,
-//         Button,
-//         Heading,
-//         Table,
-//         Input,
-//         Stack,
-//         NumberInputLabel,
-//         Text,
-// } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { Record } from '@/domain/record';
 import supabase from '@/utils/supabase';
 // import { css } from '@emotion/react';
-import { GetAllRecords } from '@/lib/record';
-import { addTodo as addTodoApi } from "../../lib/record";
+import { GetAllRecords } from '@/lib/record.ts';
+import { CreateRecord as addTodoApi } from "@/lib/record.ts";
 interface RegistrationDialogProps {
         item?: Record;
         button?: string;

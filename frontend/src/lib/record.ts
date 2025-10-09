@@ -1,56 +1,40 @@
-import axios from "axios";
-import { Record } from "../domain/record";
+// src/lib/record.ts
+import { Record } from "@/domain/record";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
-
-export async function GetAllRecords(): Promise<Record[]> {
-        try {
-                const response = await axios.get<{ id: string; title: string; time: number }[]>(`${API_URL}/records`);
-
-                const data: Record[] = response.data.map((item) =>
-                        Record.newRecord(item.id, item.title, item.time)
-                );
-
-                return data;
-        } catch (err: unknown) {
-                if (err instanceof Error) {
-                        throw new Error(err.message);
-                } else {
-                        throw new Error("Unknown error");
-                }
-        }
+interface StudyRecordRow {
+        id: string;
+        title: string;
+        time: number;
 }
 
-/**
- * 新しいレコードを追加
- * @param title 学習内容
- * @param time 学習時間
- * @returns 追加されたRecord
- */
-export async function addTodo(title: string, time: number): Promise<Record> {
-        try {
-                console.log("API_URL:", API_URL);
+export async function GetAllRecords(): Promise<Record[]> {
+        const res = await fetch("http://localhost:4000/records");
+        if (!res.ok) throw new Error("Failed to fetch records");
+        const data = await res.json();
+        return data.map((r: StudyRecordRow) => Record.newRecord(r.id, r.title, r.time));
+}
 
-                const response = await axios.post<{ id: string; title: string; time: number }>(
-                        `${API_URL}/records`,
-                        { title, time }
-                );
+export async function DeleteRecord(id: string): Promise<void> {
+        const res = await fetch(`http://localhost:4000/records/${id}`, { method: "DELETE" });
+        if (!res.ok && res.status !== 204) throw new Error("Failed to delete record");
+}
 
-                // サーバーから返ってきたデータでRecordを生成
-                console.log("Response data:", response.data); // 追加
-                return Record.newRecord(response.data.id, response.data.title, response.data.time);
+export async function CreateRecord(title: string, time: number): Promise<Record> {
+        const res = await fetch("http://localhost:4000/records", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, time }),
+        });
+        if (!res.ok) throw new Error("Failed to create record");
+        const data = await res.json();
+        return Record.newRecord(data.id, data.title, data.time);
+}
 
-        } catch (err: unknown) {
-                if (axios.isAxiosError(err)) {
-                        console.error("Axios error response:", err.response?.data);
-                        console.error("Status code:", err.response?.status);
-                        console.error("Headers:", err.response?.headers);
-                        console.error("Message:", err.message);
-                } else if (err instanceof Error) {
-                        console.error("Error:", err.message);
-                } else {
-                        console.error("Unknown error:", err);
-                }
-                throw err; // 必要なら再スロー
-        }
+export async function UpdateRecord(id: string, title: string, time: number): Promise<void> {
+        const res = await fetch(`http://localhost:4000/records/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, time }),
+        });
+        if (!res.ok) throw new Error("Failed to update record");
 }

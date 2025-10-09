@@ -2,8 +2,7 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Record } from './domain/record';
-import { GetAllRecords } from '@/lib/record';
-import { RecordDelete } from './lib/record_delete';
+import { GetAllRecords, DeleteRecord } from '@/lib/record.ts';
 import { Spinner, Text, VStack, Center } from '@chakra-ui/react';
 import { Box, Button, Heading, Table } from '@chakra-ui/react';
 import { css } from '@emotion/react';
@@ -39,22 +38,18 @@ function App() {
 
         const handleDelete = async (id: string) => {
                 try {
-                        // eq は、Supabaseのクエリビルダーで使用されるメソッドの一つ
-                        // 指定したカラムが特定の値と等しいレコードをフィルタリングするために使用
-                        // eq は "equal" の略で、SQLの = 演算子に相当する
-                        await RecordDelete(id);
-                        fetchData();
+                        await DeleteRecord(id);
+                        fetchData(); // 削除後に再取得
                 } catch (error) {
                         if (error instanceof Error) {
                                 alert(error.message);
                         } else {
-                                alert('An unknown error occurred');
+                                alert("An unknown error occurred");
                         }
                 }
         };
 
         return (
-
                 <>
                         <div>
                                 {isLoading ? (
@@ -77,6 +72,8 @@ function App() {
                                                                                 <FaBook style={{ marginRight: '8px' }} />
                                                                                 学習記録一覧
                                                                                 <Box ml={8}>
+
+                                                                                        {/* ダイアログ開くボタン */}
                                                                                         <RegistrationDialog
                                                                                                 button="registration"
                                                                                                 setData={setData}
