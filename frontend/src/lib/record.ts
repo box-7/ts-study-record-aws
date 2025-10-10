@@ -10,6 +10,7 @@ interface StudyRecordRow {
 }
 
 export async function GetAllRecords(): Promise<Record[]> {
+        // fetchは、HTTPリクエスト（API通信）を行うためのブラウザ標準の関数
         const res = await fetch(`${API_BASE_URL}/records`);
         if (!res.ok) throw new Error("Failed to fetch records");
         const data = await res.json();

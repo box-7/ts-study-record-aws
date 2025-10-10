@@ -35,6 +35,8 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
         fetchData,
 }) => {
         const [isOpen, setIsOpen] = useState(false);
+        const isRegistration = button === 'registration';
+
         // react-hook-form は、Reactでフォームを簡単・効率的に扱うためのライブラリ
         // useForm というフックを使って、フォームの状態管理やバリデーションを行う
         const {
@@ -132,17 +134,11 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                 const studyId = String(data.studyId); // string に変換
                 const studyContent = data.studyContent;
                 const studyHour = Number(data.studyHour); // number に変換
-
-                console.log("onSubmitModify called with:", { studyId, studyContent, studyHour });
-                console.log(typeof studyHour);
-
                 if (studyHour === null || isNaN(studyHour)) {
                         return;
                 }
-
                 // 既存のレコードを修正する処理
                 await updateRecord(studyId, studyContent, studyHour);
-
                 reset({
                         studyContent: '',
                         studyHour: null,
@@ -150,176 +146,102 @@ const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                 setIsOpen(false); // モーダルを閉じる
         };
 
-        if (button === 'registration') {
-                return (
-                        <DialogRoot
-                                placement="center"
-                                open={isOpen}
-                                onOpenChange={(details) => setIsOpen(details.open)}
-                        >
-                                <DialogTrigger asChild>
-                                        <button
-                                                data-testid="registration"
-                                                className="bg-sky-500 text-white border border-black px-2 py-1 text-sm cursor-pointer hover:bg-slate-800 transition-colors rounded"
-                                        >
-                                                登録
-                                        </button>
-                                </DialogTrigger>
-                                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
-                                        <DialogHeader>
-                                                <DialogTitle className="text-xl font-bold">新規登録</DialogTitle>
-                                        </DialogHeader>
+        return (
+                <DialogRoot
+                        placement="center"
+                        open={isOpen}
+                        onOpenChange={(details) => setIsOpen(details.open)}
+                >
+                        <DialogTrigger asChild>
+                                <button
+                                        data-testid={isRegistration ? "registration" : "modify-registration"}
+                                        className={
+                                                isRegistration
+                                                        ? "bg-sky-500 text-white border border-black px-2 py-1 text-sm cursor-pointer hover:bg-slate-800 transition-colors rounded"
+                                                        : "bg-lime-500 text-white border border-black px-3 py-1.5 text-lg cursor-pointer hover:bg-green-800 transition-colors rounded"
+                                        }
+                                >
+                                        {isRegistration ? "登録" : "編集"}
+                                </button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
+                                <DialogHeader>
+                                        <DialogTitle className="text-xl font-bold">
+                                                {isRegistration ? "新規登録" : "記録編集"}
+                                        </DialogTitle>
+                                </DialogHeader>
 
-                                        <DialogBody>
-                                                <form onSubmit={handleSubmit(onSubmit)}>
-                                                        <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
-                                                                <div className="w-full">
-                                                                        <label htmlFor="studyContent" className="block mb-1 font-medium">
-                                                                                学習内容
-                                                                        </label>
-                                                                        <input
-                                                                                id="studyContent"
-                                                                                type="text"
-                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-sky-300"
-                                                                                {...register('studyContent', { required: '内容の入力は必須です' })}
-                                                                        />
-                                                                        {errors.studyContent && (
-                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyContent.message}</p>
-                                                                        )}
-                                                                </div>
-
-                                                                <div>
-                                                                        <label htmlFor="studyHour" className="block mb-1 font-medium">
-                                                                                学習時間
-                                                                        </label>
-                                                                        <input
-                                                                                id="studyHour"
-                                                                                type="number"
-                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-sky-300"
-                                                                                {...register('studyHour', {
-                                                                                        required: '時間の入力は必須です',
-                                                                                        min: { value: 0, message: '時間は0以上である必要があります' },
-                                                                                })}
-                                                                        />
-                                                                        {errors.studyHour && (
-                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyHour.message}</p>
-                                                                        )}
-                                                                </div>
-
-                                                                <div className="flex space-x-2">
-                                                                        <button
-                                                                                type="submit"
-                                                                                data-testid="submit"
-                                                                                className="bg-sky-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-slate-800 transition-colors rounded"
-                                                                        >
-                                                                                保存
-                                                                        </button>
-
-                                                                        <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                        onClickCancelRecord();
-                                                                                        setIsOpen(false);
-                                                                                }}
-                                                                                className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
-
-                                                                        >
-                                                                                キャンセル
-                                                                        </button>
-                                                                </div>
+                                <DialogBody>
+                                        <form onSubmit={handleSubmit(isRegistration ? onSubmit : onSubmitModify)}>
+                                                <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
+                                                        <div className="w-full">
+                                                                <label
+                                                                        htmlFor={isRegistration ? "studyContent" : "studyContentModify"}
+                                                                        className="block mb-1 font-medium"
+                                                                >
+                                                                        学習内容
+                                                                </label>
+                                                                <input
+                                                                        id={isRegistration ? "studyContent" : "studyContentModify"}
+                                                                        type="text"
+                                                                        className={
+                                                                                "w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring " +
+                                                                                (isRegistration ? "focus:ring-sky-300" : "focus:ring-lime-300")
+                                                                        }
+                                                                        {...register('studyContent', { required: '内容の入力は必須です' })}
+                                                                />
+                                                                {errors.studyContent && (
+                                                                        <p className="text-red-500 text-sm mt-1">{errors.studyContent.message}</p>
+                                                                )}
                                                         </div>
-                                                </form>
-                                        </DialogBody>
-                                </DialogContent>
-                        </DialogRoot>
-                );
-        } else if (button === 'modifcation') {
-                return (
-                        <DialogRoot
-                                placement="center"
-                                open={isOpen}
-                                onOpenChange={(details) => setIsOpen(details.open)}
-                        >
-                                <DialogTrigger asChild>
-                                        <button
-                                                data-testid="modify-registration"
-                                                className="bg-lime-500 text-white border border-black px-3 py-1.5 text-lg cursor-pointer hover:bg-green-800 transition-colors rounded"
-                                        >
-                                                編集
-                                        </button>
-                                </DialogTrigger>
-
-                                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
-                                        <DialogHeader>
-                                                <DialogTitle className="text-xl font-bold">記録編集</DialogTitle>
-                                        </DialogHeader>
-
-                                        <DialogBody>
-                                                <form onSubmit={handleSubmit(onSubmitModify)}>
-
-                                                        <div className="p-4 border border-gray-300 rounded-lg shadow-lg max-w-sm space-y-4">
-                                                                <div className="w-full">
-                                                                        <label htmlFor="studyContentModify" className="block mb-1 font-medium">
-                                                                                学習内容
-                                                                        </label>
-
-                                                                        <input
-                                                                                id="studyContentModify"
-                                                                                type="text"
-                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-lime-300"
-                                                                                {...register('studyContent', { required: '内容の入力は必須です' })}
-                                                                        />
-                                                                        {errors.studyContent && (
-                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyContent.message}</p>
-                                                                        )}
-                                                                </div>
-
-                                                                <div>
-                                                                        <label htmlFor="studyHourModify" className="block mb-1 font-medium">
-                                                                                学習時間
-                                                                        </label>
-                                                                        <input
-                                                                                id="studyHourModify"
-                                                                                type="number"
-                                                                                className="w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-lime-300"
-                                                                                {...register('studyHour', {
-                                                                                        required: '時間の入力は必須です',
-                                                                                        min: { value: 0, message: '時間は0以上である必要があります' },
-                                                                                })}
-                                                                        />
-                                                                        {errors.studyHour && (
-                                                                                <p className="text-red-500 text-sm mt-1">{errors.studyHour.message}</p>
-                                                                        )}
-                                                                </div>
-
-                                                                <div className="flex space-x-2">
-                                                                        <button
-                                                                                type="submit"
-                                                                                data-testid="submit-modify"
-                                                                                className="bg-sky-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-slate-800 transition-colors rounded"
-                                                                        >
-                                                                                保存
-                                                                        </button>
-
-                                                                        <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                        setIsOpen(false);
-                                                                                }}
-                                                                                className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
-                                                                        >
-                                                                                キャンセル
-                                                                        </button>
-                                                                </div>
+                                                        <div>
+                                                                <label
+                                                                        htmlFor={isRegistration ? "studyHour" : "studyHourModify"}
+                                                                        className="block mb-1 font-medium"
+                                                                >
+                                                                        学習時間
+                                                                </label>
+                                                                <input
+                                                                        id={isRegistration ? "studyHour" : "studyHourModify"}
+                                                                        type="number"
+                                                                        className={
+                                                                                "w-full border border-gray-400 rounded px-2 py-1 focus:outline-none focus:ring " +
+                                                                                (isRegistration ? "focus:ring-sky-300" : "focus:ring-lime-300")
+                                                                        }
+                                                                        {...register('studyHour', {
+                                                                                required: '時間の入力は必須です',
+                                                                                min: { value: 0, message: '時間は0以上である必要があります' },
+                                                                        })}
+                                                                />
+                                                                {errors.studyHour && (
+                                                                        <p className="text-red-500 text-sm mt-1">{errors.studyHour.message}</p>
+                                                                )}
                                                         </div>
-                                                </form>
-                                        </DialogBody>
-                                </DialogContent>
-                        </DialogRoot>
-                );
-        }
-
-
+                                                        <div className="flex space-x-2">
+                                                                <button
+                                                                        type="submit"
+                                                                        data-testid={isRegistration ? "submit" : "submit-modify"}
+                                                                        className="bg-sky-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-slate-800 transition-colors rounded"
+                                                                >
+                                                                        保存
+                                                                </button>
+                                                                <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                                onClickCancelRecord();
+                                                                                setIsOpen(false);
+                                                                        }}
+                                                                        className="bg-red-500 text-white border border-black px-3 py-1.5 w-20 hover:bg-red-800 transition-colors rounded"
+                                                                >
+                                                                        キャンセル
+                                                                </button>
+                                                        </div>
+                                                </div>
+                                        </form>
+                                </DialogBody>
+                        </DialogContent>
+                </DialogRoot>
+        );
 };
 
 export default RegistrationDialog;
