@@ -26,3 +26,4 @@ dist-ssr
 
 # Jest HTMLレポートの添付ファイル
 html-report/
+html-report/jest-html-reporters-attach/jest_html_reporters/result.js
