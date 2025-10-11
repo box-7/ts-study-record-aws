@@ -17,7 +17,7 @@ title: string
 time: number  
 
 プロジェクト直下に「.envファイル」を作成してください。  
-.envに、VITE_SUPABASE_URL、VITE_SUPABASE_ANON_KEYを設定してください。  
+<!-- .envに、VITE_SUPABASE_URL、VITE_SUPABASE_ANON_KEYを設定してください。   -->
 
 # 起動の仕方
 プロジェクトディレクトリに移動し、npm run dev を打ち込んでください。  

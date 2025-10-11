@@ -9,9 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest # ジョブを実行するランナーの環境を指定
-    env :
-      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    # env :
+    #   VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+    #   VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     steps:
       - name: Checkout repository  # ワークフローのジョブ内でリポジトリのコードを取得し、ビルド、テスト、デプロイなどの操作ができる
         uses: actions/checkout@v4
