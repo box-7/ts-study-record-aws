@@ -1,4 +1,4 @@
-import { Record } from "@/domain/record";
+import { Record } from "@shared/record.ts";
 
 // AWS用APIエンドポイント（環境変数から取得、なければローカル）
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";

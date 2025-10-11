@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import Database from "better-sqlite3";
 import cors from "cors";
-import { Record } from "./domain/record.ts";
+import { Record } from "../shared/record.ts";
 
 const app = express();
 app.use(cors());

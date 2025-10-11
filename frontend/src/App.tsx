@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Record } from './domain/record';
-import { GetAllRecords, DeleteRecord } from '@/lib/record.ts';
+import { Record } from '@shared/record';
+import { GetAllRecords, DeleteRecord } from '@/lib/recordApi';
 import { Spinner, Text, VStack, Center } from '@chakra-ui/react';
 import { Box, Button, Heading, Table } from '@chakra-ui/react';
 import { css } from '@emotion/react';

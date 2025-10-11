@@ -11,9 +11,9 @@ import {
         DialogTrigger,
 } from '@/components/ui/dialog';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Record } from '@/domain/record';
-import { UpdateRecord, GetAllRecords } from "@/lib/record";
-import { CreateRecord as addTodoApi } from "@/lib/record.ts";
+import { Record } from '@shared/record.ts';
+import { UpdateRecord, GetAllRecords, CreateRecord as addTodoApi } from "@/lib/recordApi";
+// import { CreateRecord as addTodoApi } from "@/lib/record.ts";
 
 interface RegistrationDialogProps {
         item?: Record;
