@@ -1,7 +1,9 @@
 import { Record } from "@shared/record.ts";
 
 // AWS用APIエンドポイント（環境変数から取得、なければローカル）
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:4000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+console.log("API_BASE_URL:", API_BASE_URL);
+
 
 interface StudyRecordRow {
         id: string;
