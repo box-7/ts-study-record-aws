@@ -1,16 +1,37 @@
+console.log('--- server.ts START ---');
+
 import express from 'express';
 import prisma from './src/db.ts';
 import cors from 'cors';
 
+process.on('uncaughtException', err => {
+    console.error('uncaughtException:', err);
+});
+process.on('unhandledRejection', err => {
+    console.error('unhandledRejection:', err);
+});
+
+
+console.log('--- server.ts: import開始 ---');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+console.log('--- server.ts: Prisma接続開始 ---');
+prisma.$connect().then(() => {
+    console.log('--- server.ts: Prisma接続成功 ---');
+    app.listen(4000, () => console.log('--- server.ts: サーバー起動 ---'));
+}).catch(err => {
+    console.error('--- server.ts: Prisma接続失敗 ---', err);
+});
 
 app.get('/records', async (req, res) => {
         try {
                 const rows = await prisma.studyRecord.findMany({ orderBy: { created_at: 'asc' } });
                 res.json(rows);
         } catch (err) {
+		console.error('GET /records error:', err);
                 res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
         }
 });
@@ -24,6 +45,7 @@ app.post('/records', async (req, res) => {
                 const newRecord = await prisma.studyRecord.create({ data: { title, time } });
                 res.status(201).json(newRecord);
         } catch (err) {
+		console.error('POST /records error:', err);
                 res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
         }
 });
@@ -41,6 +63,7 @@ app.put('/records/:id', async (req, res) => {
                 });
                 res.json(updatedRecord);
         } catch (err) {
+		console.error('PUT /records/:id error:', err);
                 res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
         }
 });
@@ -51,6 +74,7 @@ app.delete('/records/:id', async (req, res) => {
                 await prisma.studyRecord.delete({ where: { id } });
                 res.status(204).send();
         } catch (err) {
+		console.error('DELETE /records/:id error:', err);
                 res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' });
         }
 });
