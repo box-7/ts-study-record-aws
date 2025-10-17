@@ -18,12 +18,10 @@ datasource db {
 //   url      = env("DATABASE_URL")
 // }
 
-
-//output = "../generated/prisma" の意味（簡潔）
-//Prisma の generator 設定で指定した出力先です。
-//schema.prisma を基準にして相対パスで指定され、Prisma Client の生成物（JS/TS）がそのディレクトリに書き出されます。
-//例えば schema.prisma が schema.prisma にあるなら、生成先は backend/generated/prisma になります。
-
+//output = "../generated/prisma" の意味
+//Prisma の generator 設定で指定した出力先
+//schema.prisma を基準にして相対パスで指定され、Prisma Client の生成物（JS/TS）がそのディレクトリに書き出される
+//例えば schema.prisma が schema.prisma にあるなら、生成先は backend/generated/prisma になる
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
