@@ -30,4 +30,7 @@ dist-ssr
 html-report/
 html-report/jest-html-reporters-attach/jest_html_reporters/result.js
 
-/generated/prisma
+/generated/prism
+tsconfig.tsbuildinfoa
+backend/prisma/dev.db
+*.sqlite
