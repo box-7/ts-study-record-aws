@@ -4,20 +4,29 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-// ローカル用
-//  generator client {
-//    provider = "prisma-client-js"
-//    output   = "../generated/prisma"
-//  } 
+// Prisma schema - ローカル開発は SQLite を想定。production は下のコメントを有効化して DATABASE_URL を本番値にする。
 
-// 本番用
+// datasource: ローカル（SQLite）
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // 例: file:./prisma/dev.db (backend/.env に配置推奨)
 }
+
+// production 用（PostgreSQL）に切り替える場合は上をコメントアウトして下を有効化する
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+
+//output = "../generated/prisma" の意味（簡潔）
+//Prisma の generator 設定で指定した出力先です。
+//schema.prisma を基準にして相対パスで指定され、Prisma Client の生成物（JS/TS）がそのディレクトリに書き出されます。
+//例えば schema.prisma が schema.prisma にあるなら、生成先は backend/generated/prisma になります。
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 model StudyRecord {
@@ -26,4 +35,3 @@ model StudyRecord {
   time       Int
   created_at DateTime @default(now())
 }
-

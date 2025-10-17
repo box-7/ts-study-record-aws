@@ -34,3 +34,12 @@ html-report/jest-html-reporters-attach/jest_html_reporters/result.js
 tsconfig.tsbuildinfoa
 backend/prisma/dev.db
 *.sqlite
+
+schema.prisma
+
+# Prisma generated client（生成物）
+/backend/generated/prisma/
+# local sqlite db
+/backend/prisma/dev.db
+# backend env
+/backend/.env
