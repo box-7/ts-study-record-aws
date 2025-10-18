@@ -43,3 +43,7 @@ schema.prisma
 /backend/prisma/dev.db
 # backend env
 /backend/.env
+
+generated/
+node_modules/
+dist/
