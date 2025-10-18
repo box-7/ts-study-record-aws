@@ -1,8 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// # 開発（SQLite）でスキーマ反映（履歴不要なら db push）
+// cd backend
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma Client を生成
+// npx prisma generate --schema=prisma/schema.sqlite.prisma
+
+// マイグレーションを作成・適用するとき（履歴を残す）
+// npx prisma migrate dev --schema=prisma/schema.sqlite.prisma --name init
+
+// Prisma Studio を開くとき
+// npx prisma studio --schema=prisma/schema.sqlite.prisma
 
 // Prisma schema - ローカル開発は SQLite を想定。production は下のコメントを有効化して DATABASE_URL を本番値にする。
 
@@ -11,12 +17,6 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL") // 例: file:./prisma/dev.db (backend/.env に配置推奨)
 }
-
-// production 用（PostgreSQL）に切り替える場合は上をコメントアウトして下を有効化する
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
 
 //output = "../generated/prisma" の意味
 //Prisma の generator 設定で指定した出力先
@@ -33,3 +33,13 @@ model StudyRecord {
   time       Int
   created_at DateTime @default(now())
 }
+
+
+
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
