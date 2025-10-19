@@ -20,7 +20,8 @@ datasource db {
 //例えば schema.prisma が schema.prisma にあるなら、生成先は backend/generated/prisma になる
 generator client {
   provider = "prisma-client-js"
-  output   = "../backend/prisma/generated/prisma/postgres"
+  //間違い  output   = "../backend/prisma/generated/prisma/postgres"  
+  output   = "../../generated/prisma"
 }
 
 model StudyRecord {
