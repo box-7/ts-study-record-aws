@@ -47,3 +47,4 @@ schema.prisma
 generated/
 node_modules/
 dist/
+backend/prisma/sqlite/prisma/dev.db

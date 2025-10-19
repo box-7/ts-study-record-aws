@@ -21,11 +21,25 @@ datasource db {
 //output = "../generated/prisma" の意味
 //Prisma の generator 設定で指定した出力先
 //schema.prisma を基準にして相対パスで指定され、Prisma Client の生成物（JS/TS）がそのディレクトリに書き出される
+//例えば schema.prisma が backend/prisma/sqlite/schema.sqlite.prismaにあるなら、生成先は backend/generated/prisma になる
+//generator client {
+//  provider = "prisma-client-js"
+//   output   = "../backend/prisma/generated/prisma/sqlite"
+//}
+
+//output = "../generated/prisma" の意味
+//Prisma の generator 設定で指定した出力先
+//schema.prisma を基準にして相対パスで指定され、Prisma Client の生成物（JS/TS）がそのディレクトリに書き出される
 //例えば schema.prisma が schema.prisma にあるなら、生成先は backend/generated/prisma になる
+//generatedはgitignore追加済み
 generator client {
   provider = "prisma-client-js"
-   output   = "../backend/prisma/generated/prisma/sqlite"
+  // 階層が間違えていて動かなかった
+  // output   = "../backend/prisma/generated/prisma/sqlite"
+  output   = "../../generated/prisma"
 }
+
+
 
 model StudyRecord {
   id         String   @id @default(uuid())

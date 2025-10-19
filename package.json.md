@@ -1,0 +1,69 @@
+{
+        "name": "sample-vite-ts",
+        "private": true,
+        "version": "0.0.0",
+        "type": "module",
+        "scripts": {
+                "dev": "vite",
+                "build": "tsc -b && vite build",
+                "lint": "eslint .",
+                "preview": "vite preview",
+                "test": "jest",
+                "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+
+node：Node.js を実行するコマンド。
+--loader ts-node/esm：Node の ESM ローダーとして ts-node/esm を使う（TypeScript をそのまま実行できるようにする）。
+backend/server.ts：実行するエントリーポイント（TypeScript ファイル）のパス。
+このスクリプトは「TypeScript の server.ts を事前にトランスパイルせずに ts-node の ESM ローダー経由で直接実行する」ためのコマンド。実行方法は以下。
+                "server": "node --loader ts-node/esm backend/server.ts"
+        },
+        "dependencies": {
+                "@chakra-ui/react": "^3.2.3",
+                "@emotion/react": "^11.13.5",
+                "@prisma/client": "^6.17.1",
+                "@supabase/supabase-js": "^2.47.2",
+                "axios": "^1.12.2",
+                "better-sqlite3": "^12.4.1",
+                "cors": "^2.8.5",
+                "dotenv": "^16.4.7",
+                "express": "^5.1.0",
+                "firebase": "^11.0.2",
+                "next-themes": "^0.4.4",
+                "prisma": "^6.17.1",
+                "react": "^18.3.1",
+                "react-dom": "^18.3.1",
+                "react-hook-form": "^7.54.0",
+                "react-icons": "^5.4.0",
+                "uuid": "^11.0.3",
+                "vite-plugin-env-compatible": "^2.0.1"
+        },
+        "devDependencies": {
+                "@eslint/js": "^9.15.0",
+                "@testing-library/jest-dom": "^6.6.3",
+                "@testing-library/react": "^16.1.0",
+                "@testing-library/user-event": "^14.5.2",
+                "@types/better-sqlite3": "^7.6.13",
+                "@types/cors": "^2.8.19",
+                "@types/express": "^5.0.3",
+                "@types/jest": "^29.5.14",
+                "@types/node": "^24.7.0",
+                "@types/react": "^18.3.12",
+                "@types/react-dom": "^18.3.1",
+                "@types/uuid": "^10.0.0",
+                "@vitejs/plugin-react": "^4.3.4",
+                "eslint": "^9.15.0",
+                "eslint-plugin-react-hooks": "^5.0.0",
+                "eslint-plugin-react-refresh": "^0.4.14",
+                "globals": "^15.12.0",
+                "identity-obj-proxy": "^3.0.0",
+                "jest-environment-jsdom": "^29.7.0",
+                "jest-html-reporters": "^3.1.7",
+                "prettier": "^3.4.2",
+                "ts-jest": "^29.2.5",
+                "ts-node": "^10.9.2",
+                "typescript": "~5.6.2",
+                "typescript-eslint": "^8.15.0",
+                "vite": "^6.0.1",
+                "vite-tsconfig-paths": "^5.1.4"
+        }
+}
