@@ -1,12 +1,16 @@
+
+// マイグレーション作成（ローカルで実行）
+// npx prisma migrate dev --schema=prisma/postgres/schema.postgres.prisma --name init
+// git add prisma/migrations/
+// git commit -m "Add initial migration"
+// git push
+
 // 本番（Postgres）用コマンド（CI/EC2上で実行）
 // cd backend
 // npx prisma migrate deploy --schema=prisma/schema.postgres.prisma
 // npx prisma generate --schema=prisma/schema.postgres.prisma
 
-
-
 // Prisma schema - ローカル開発は SQLite を想定。production は下のコメントを有効化して DATABASE_URL を本番値にする。
-
 
 // production 用（PostgreSQL）に切り替える場合は上をコメントアウトして下を有効化する
 datasource db {
@@ -30,10 +34,6 @@ model StudyRecord {
   time       Int
   created_at DateTime @default(now())
 }
-
-
-
-
 
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
