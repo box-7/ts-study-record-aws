@@ -1,10 +1,21 @@
 import { Record } from "@shared/record.ts";
 
 // AWS用APIエンドポイント（環境変数から取得、なければローカル）
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+function getApiBaseUrl(): string {
+        // Jest（Node.js）環境なら process.env から取得
+        if (typeof process !== "undefined" && process.env.VITE_API_BASE_URL) {
+                return process.env.VITE_API_BASE_URL;
+        }
+        // Vite（ブラウザ）環境なら import.meta.env から取得
+        if (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) {
+                return import.meta.env.VITE_API_BASE_URL;
+        }
+        // どちらもなければローカル
+        return "http://localhost:4000";
+}
+
+const API_BASE_URL = getApiBaseUrl();
 console.log("API_BASE_URL:", API_BASE_URL);
-
-
 interface StudyRecordRow {
         id: string;
         title: string;
