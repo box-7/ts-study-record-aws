@@ -8,7 +8,15 @@ export default {
         testEnvironment: "jest-environment-jsdom",
         setupFilesAfterEnv: ["./jest.setup.ts"],
         transform: {
-                "^.+\\.(ts|tsx)$": "ts-jest",
+                "^.+\\.(ts|tsx)$": [
+                        "ts-jest",
+                        {
+                                tsconfig: {
+                                        module: "ESNext",
+                                        target: "ES2020",
+                                },
+                        },
+                ],
         },
         moduleNameMapper: {
                 "\\.(css|less)$": "identity-obj-proxy",
