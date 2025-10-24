@@ -48,3 +48,6 @@ generated/
 node_modules/
 dist/
 backend/prisma/sqlite/prisma/dev.db
+
+how-to-build-cicd.md
+

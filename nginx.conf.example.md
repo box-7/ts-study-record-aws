@@ -76,20 +76,13 @@ http {
         // serverブロック（HTTP用）: 80番ポートで待ち受け、aws-intro-sample777.comへのアクセスをHTTPSへリダイレクトする設定
         server {
                 listen 80;
-                server_name aws-intro-sample777.com;
+                server_name aws-intro-sample777.com www.aws-intro-sample777.com;
 
                 # HTTPからHTTPSへリダイレクト（任意）
                 // 301 は「恒久的なリダイレクト（Moved Permanently）」のステータスコード
                 // $host はリクエストされたホスト名（例: aws-intro-sample777.com）
                 // $request_uri はリクエストされたパスやクエリ（例: /index.html?foo=bar）
                 return 301 https://$host$request_uri;
-        }
-
-        # HTTP (80) の www をリダイレクト
-        server {
-                listen 80;
-                server_name www.aws-intro-sample777.com;
-                return 301 https://aws-intro-sample777.com$request_uri;
         }
 
         # HTTPS (443) の www をリダイレクト
@@ -120,6 +113,7 @@ http {
                 location /records {
                         // リクエストをバックエンドサーバー（Node.jsなど）に転送
                         // backend/server.ts
+                        // → Nginx が「受け取り役」で、Nginx 自身が バックエンドサーバーにリクエストを代理送信
                         proxy_pass http://localhost:4000;
                         // 元のホスト名をバックエンドに渡す
                         proxy_set_header Host $host;
@@ -139,4 +133,5 @@ http {
         }
 }
 ```
+
 

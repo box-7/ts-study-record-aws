@@ -4,7 +4,7 @@ console.log('--- server.ts START ---');
 
 // npm パッケージ express のデフォルトエクスポートを読み込む。HTTP サーバ／ルーティング作成に使う。
 import express from 'express';
-// 同リポジトリ内の db.ts を参照している。そこから export default された PrismaClient のインスタンスを受け取る。
+// 同リポジトリ内の db.ts を参照。PrismaClient のインスタンスを受け取る。
 import prisma from './src/db.ts';
 // npm パッケージ cors のデフォルトエクスポートを読み込む。ブラウザからのクロスオリジンリクエストを許可するミドルウェア。
 import cors from 'cors';
@@ -129,6 +129,10 @@ prisma.$connect()
                                 console.error('Database keepalive failed:', err);
                         }
                 }, 30000); // 30秒ごと
+
+                // app.listen() は、Expressアプリを特定のポート番号で起動するメソッド
+                // ここで指定している 4000番ポートは HTTP サーバーのポート
+                // データベースのポートではない
                 server = app.listen(4000, '0.0.0.0', () => {
                         console.log('--- server.ts: サーバー起動 ---');
                         console.log('Server running on port 4000');
