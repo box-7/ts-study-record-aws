@@ -42,7 +42,9 @@ jobs:
           username: ec2-user
           key: ${{ secrets.PEM_KEY }}
           port: 22
-          proxy: ssh -i ${{ secrets.PEM_KEY }} ec2-user@${{ secrets.BASTION_HOST }} -W %h:%p
+          proxy_host: ${{ secrets.BASTION_HOST }}
+          proxy_username: ec2-user
+          proxy_key: ${{ secrets.PEM_KEY }}
           script: |
             whoami
             uptime
