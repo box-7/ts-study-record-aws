@@ -4,16 +4,13 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # GitHub Actions の UI から手動で実行するためのトリガー
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # ジョブを実行するランナーの環境を指定
-    # env :
-    #   VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-    #   VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository  # ワークフローのジョブ内でリポジトリのコードを取得し、ビルド、テスト、デプロイなどの操作ができる
+      - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -26,15 +23,19 @@ jobs:
       - name: Run Prettier
         run: npx prettier --write .
       - name: Run tests
-        run: npm run test # 環境変数は定義済み
-      - name: Build project
-        run: npm run build
-      # アーティファクト(ソフトウェア開発プロセスにおいて生成される成果物)をアップロード
-      # - name: Upload build artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-artifacts # アップロードするアーティファクトの名前を指定
-      #     path: dist # distディレクトリ内のすべてのファイルがアーティファクトとしてアップロードされる
+        run: npm run test
+
+- name: Test SSH to Web via Bastion
+  uses: appleboy/ssh-action@v0.2.0
+  with:
+    host: ${{ secrets.WEB_HOST }}
+    username: ec2-user
+    key: ${{ secrets.PEM_KEY }}
+    port: 22
+    proxy: ssh -i ${{ secrets.PEM_KEY }} ec2-user@${{ secrets.BASTION_HOST }} -W %h:%p
+    script: |
+      whoami
+      uptime
 
   # deploy:
   #   name: deploy
