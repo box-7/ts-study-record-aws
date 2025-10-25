@@ -26,11 +26,11 @@ jobs:
           npm run test
 
   deploy:
-    name: SSH Test to Web via Bastion
+    name: SSH to Web via Bastion and Deploy
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: SSH Test
+      - name: SSH Deploy
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.WEB_HOST }}
