@@ -1,7 +1,11 @@
-自分のプロジェクト
+# jest.setup.ts
+Jest テストランナーのセットアップファイルで、各テストファイルの実行前に実行されるスクリプトを定義するために使用される
 
+### 自分のプロジェクトのコード
 ```
+// パッケージをインポートして、Jest のカスタムマッチャを追加する  
 import '@testing-library/jest-dom';
+// .env ファイルの内容を自動的に読み込んで process.env に反映させるためのショートカット構文
 import 'dotenv/config';
 
 // アラートをモック化
@@ -10,24 +14,17 @@ window.alert = jest.fn();
 if (typeof global.structuredClone === 'undefined') {
         global.structuredClone = (obj) => obj === undefined ? undefined : JSON.parse(JSON.stringify(obj));
 }
-
 ```
 
-@testing-library/jest-dom パッケージをインポートして、Jest のカスタムマッチャを追加する  
-import 'dotenv/config';  
-
-structuredClone は、JavaScript のオブジェクトを深くコピーするための標準的なメソッド  
+### structuredClone  
+JavaScript のオブジェクトを深くコピーするための標準的なメソッド  
 深いコピーとは、オブジェクトのすべてのプロパティとそのネストされたオブジェクトを再帰的にコピーすることを意味する  
 これにより、元のオブジェクトとコピーされたオブジェクトが完全に独立した状態になる  
 
 Window: structuredClone() メソッド  
 https://developer.mozilla.org/ja/docs/Web/API/Window/structuredClone
 
-# structuredClone フォールバックの説明
-
-Node.js のバージョンが古い場合でもテスト環境で `structuredClone` を安全に使用できるようにするための説明です。
-
-## 動作の説明
+### 動作の説明
 
 - `typeof global.structuredClone === 'undefined'`  
   `structuredClone` が既に定義されているかどうかを確認
@@ -38,7 +35,7 @@ Node.js のバージョンが古い場合でもテスト環境で `structuredClo
   - ネストされたオブジェクトも再帰的にコピー
   - 元のオブジェクトとコピーは完全に独立
 
-## コピーされるもの
+### コピーされるもの
 
 - JavaScript のオブジェクトや配列などのデータ構造
   - オブジェクトリテラル `{}`  
