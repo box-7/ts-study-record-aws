@@ -41,24 +41,18 @@ jobs:
           proxy_username: ec2-user
           proxy_key: ${{ secrets.PEM_KEY }}
           script: |
-            whoami
-            uptime
+            cd /home/ec2-user/ts-study-record-aws
+            git pull origin main
 
-  # deploy:
-  #   name: deploy
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: build-artifacts # buildでアップロードしたアーティファクトの名前
-  #         path: dist
-  #     - name: Deploy to Firebase Hosting
-  #       uses: FirebaseExtended/action-hosting-deploy@v0
-  #       with:
-  #         firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-  #         projectId: "${{ secrets.FIREBASE_PROJECT_ID }}"
-  #         channelId: live
+            # フロントエンドビルド
+            cd frontend
+            npm install
+            npm run build
+
+            # バックエンドマイグレーション＆Prisma生成
+            cd /home/ec2-user/ts-study-record-aws/backend
+            npx prisma migrate deploy --schema=prisma/postgres/schema.postgres.prisma
+            npx prisma generate --schema=prisma/postgres/schema.postgres.prisma
+
+            # Nginx再起動
+            sudo systemctl reload nginx
