@@ -35,6 +35,14 @@ model StudyRecord {
   created_at DateTime @default(now())
 }
 
+// 追加: TestModel7
+model TestModel7 {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+}
+
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
