@@ -1,13 +1,12 @@
 # Configuring Vite  
+- react プラグインは、Vite で React をサポートするためのプラグイン
+- defineConfig は、Vite の設定を定義するための関数  TypeScript の型補完が有効になる
+- tsconfigPaths プラグインは、TypeScript の tsconfig.json ファイルに定義されたパスエイリアスを Vite で解決するためのプラグイン
+- envCompatible プラグインは、環境変数を Vite のプロジェクトに適用するためのプラグイン
+- 特定のプレフィックスを持つ環境変数を読み込み、指定されたパスにマウント
 
-自分のプロジェクト
+### 自分のプロジェクト
 ```
-react プラグインは、Vite で React をサポートするためのプラグイン
-defineConfig は、Vite の設定を定義するための関数  TypeScript の型補完が有効になる
-tsconfigPaths プラグインは、TypeScript の tsconfig.json ファイルに定義されたパスエイリアスを Vite で解決するためのプラグイン
-envCompatible プラグインは、環境変数を Vite のプロジェクトに適用するためのプラグイン
-特定のプレフィックスを持つ環境変数を読み込み、指定されたパスにマウント
-
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -42,6 +41,7 @@ mountedPath: 'process.env':
 環境変数をマウントするパスを指定  
 環境変数が process.env にマウント
 
+##### 読み込みの順番
 1 .env ファイル  
 VITE_API_URL=https://api.example.com  
 2 vite.config.ts  
