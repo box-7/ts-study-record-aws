@@ -33,14 +33,14 @@ jobs:
       - name: SSH Deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.WEB_HOST }}
-          username: ec2-user
-          key: ${{ secrets.PEM_KEY }}
-          port: 22
-          proxy_host: ${{ secrets.BASTION_HOST }}
-          proxy_username: ec2-user
-          proxy_key: ${{ secrets.PEM_KEY }}
-          script: |
+          host: ${{ secrets.WEB_HOST }} # SSH host address
+          username: ec2-user # SSH username
+          key: ${{ secrets.PEM_KEY }} # Content of SSH private key (e.g., raw content of ~/.ssh/id_rsa)
+          port: 22 # SSH port number
+          proxy_host: ${{ secrets.BASTION_HOST }} # proxy_host
+          proxy_username: ec2-user # proxy_username
+          proxy_key: ${{ secrets.PEM_KEY }} # Content of SSH proxy private key
+          script: | # Commands to execute remotely
             set -e # どこかでエラーが発生した時点で、以降のコマンドは実行されない
             cd /home/ec2-user/ts-study-record-aws
             git reset --hard
