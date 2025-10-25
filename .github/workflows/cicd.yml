@@ -41,7 +41,10 @@ jobs:
           proxy_username: ec2-user
           proxy_key: ${{ secrets.PEM_KEY }}
           script: |
+            set -e # どこかでエラーが発生した時点で、以降のコマンドは実行されない
             cd /home/ec2-user/ts-study-record-aws
+            git reset --hard
+            git clean -fd
             git pull origin main
 
             # フロントエンドビルド
