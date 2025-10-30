@@ -1,0 +1,462 @@
+# EC2の実物とすり合わせ
+# パラメーターや関連サブネットの設定など、抜けがないか確認
+# ドキュメントをみて必要属性、その他の属性を見る
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-ec2-internetgateway.html
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template for VPC, Subnets, EC2 (Bastion + Web), RDS, Route53
+
+Parameters:
+# Type: String … 値は文字列
+# Default: 10.0.0.0/16 … デフォルト値は「10.0.0.0/16」
+# Description … このパラメータの説明（VPCのCIDRブロック）
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.0.0.0/20
+    Description: CIDR block for the public subnet
+
+# Description: EC2インスタンスで使用するAMI IDを指定
+  LatestAmiId:
+    Type: String
+    Description: The AMI ID to use for EC2 instances
+
+# Description: EC2インスタンスへSSH接続するためのキーペア名を指定
+# このパラメータは、CloudFormation スタック作成時に**ユーザーが入力する「EC2キーペア名」**を受け取る
+  KeyPairName:
+    Type: String
+    Description: EC2 KeyPair Name for SSH access
+
+# Resources:-----------------------------------------------------------------------------------
+Resources:
+
+# VPC:-----------------------------------------------------------------------------------
+  TsStudyRecordVPC:
+    Type: AWS::EC2::VPC
+# Properties:
+#   CidrBlock: !Ref VpcCidr … VPCのCIDRブロック（パラメータから取得）
+#   !Ref は「指定したリソース名またはパラメータ名を参照して、その値を取得する」ための関数
+#   EnableDnsSupport: true … DNS解決を有効化
+#   EnableDnsHostnames: true … DNSホスト名を有効化
+#   Name というタグに TsStudyRecordVPC という値を付ける
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: ts-study-record-vpc
+
+# Internet Gateway:-----------------------------------------------------------------------------------
+  IGWTsStudyRecord:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: igw-ts-study-record
+
+# AttachIGW:-----------------------------------------------------------------------------------
+# TsStudyRecordVPCとIGWTsStudyRecordをアタッチし、インターネット通信できるようにする
+  AttachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      InternetGatewayId: !Ref IGWTsStudyRecord
+
+# Subnet:-----------------------------------------------------------------------------------
+  # Public Subnet 1 (ap-northeast-1a)
+#  MapPublicIpOnLaunch: true
+# - EC2 起動時に自動でパブリックIPを割り当てる
+# - Public Subnet は true、Private Subnet は通常 false (NAT 経由)
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      CidrBlock: !Ref PublicSubnetCidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: ap-northeast-1a
+      Tags:
+        - Key: Name
+          Value: public-ts-study-record-subnet
+
+  # Private Subnet 1 (ap-northeast-1a)
+  # MapPublicIpOnLaunch: false サブネット内に作成されるインスタンスに自動的にパブリックIPを割り当てない
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      CidrBlock: 10.0.64.0/20
+      AvailabilityZone: ap-northeast-1a
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: private-ts-study-record-subnet
+
+  # Private Subnet 2 (ap-northeast-1c)
+  PrivateSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      CidrBlock: 10.0.80.0/20
+      AvailabilityZone: ap-northeast-1c
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: private02-ts-study-record-subnet
+
+# Subnet Group:-----------------------------------------------------------------------------------
+  # RDS Subnet Group（プライベートサブネット 2つにするのが推奨）
+  RDSSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for private RDS
+      SubnetIds:
+        - !Ref PrivateSubnetA
+        - !Ref PrivateSubnetC
+      Tags:
+        - Key: Name
+          Value: PrivateRDSSubnetGroup
+
+# Route Table:-----------------------------------------------------------------------------------
+  # Public Route Table
+  PublicRouteTable:
+  # VPC 内で使うルートテーブルを作成するためのリソース
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      Tags:
+        - Key: Name
+          Value:  rt-public-ts-study-record
+
+  # Default route to IGW
+  # 10.0.0.0/16 → local は VPC 内通信用のデフォルトルート
+  # VPC を作成すると自動で作られるため、IaC で作る必要はなし
+  PublicRoute:
+    Type: AWS::EC2::Route
+    # DependsOn → 作成順序の制御
+    DependsOn: AttachIGW
+    Properties:
+    # RouteTableId → PublicRouteTableにルートを設定する
+      RouteTableId: !Ref PublicRouteTable
+      # 「この宛先へのトラフィックはどこに送るか」を定義。主にアウトバウンド（VPC → インターネット）用
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGWTsStudyRecord
+
+  # Public Subnet にルートテーブルを関連付け
+  PublicSubnetRouteTableAssociation:
+  # 「サブネットにルートテーブルを紐付ける」リソース
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Private Route Table
+  # VPC 内のリソース間通信を管理するルートテーブル(必要に応じて NAT 経由でインターネットへのアクセスも管理)
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref TsStudyRecordVPC
+      Tags:
+        - Key: Name
+          Value: rt-private-ts-study-record
+
+  # Private Subnet A にルートテーブルを関連付け
+  PrivateSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+
+  # Private Subnet C にルートテーブルを関連付け
+  PrivateSubnetCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetC
+      RouteTableId: !Ref PrivateRouteTable
+
+# Security Group:-----------------------------------------------------------------------------------
+  # http-https-sg-ts-study-record / Webサーバ用
+  HttpHttpsSgTsStudyRecord:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and HTTPS access
+      VpcId: !Ref TsStudyRecordVPC
+      Tags:
+        - Key: Name
+          Value: http-https-sg-ts-study-record
+      # インバウンド
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  # WebServer → RDS (PostgreSQL 5432)
+  # Webアプリケーション用アクセス、固定IP不要
+  # RDS SG: WebserverRdsSgTsStudyRecord に WebServer SG を指定
+
+  # Bastion → RDS (PostgreSQL 5432)
+  # 運用者用アクセス、Bastion SG または固定IPからのみ許可
+  # RDS SG: WebserverRdsSgTsStudyRecord に Bastion SG / 固定IPを指定
+
+  # WebServer → Backend API (ポート 4000)
+  # Webサーバからのみアクセス許可
+  # API側 SG: BackendApiSg に WebServer SG を指定
+  WebserverRdsSgTsStudyRecord:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow DB access from WebServer and Bastion only
+      VpcId: !Ref TsStudyRecordVPC
+      Tags:
+        - Key: Name
+          Value: webserver-rds-sg-ts-study-record
+      SecurityGroupIngress:
+        # WebServer → RDS (PostgreSQL)
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref HttpHttpsSgTsStudyRecord
+        # Bastion → RDS (PostgreSQL)
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          # IPがまだ決まってない、または変更される可能性がある場合は
+          # GUI（コンソール）や手動であとから編集可能
+          # 一時的にCidrIpで許可し、後から手動で修正
+          CidrIp: 0.0.0.0/0
+          # CidrIp: <Bastion固定IP>/32  # Bastionサーバの固定IP
+          # 固定IPじゃなくSG同士でアクセス制御することも可能
+          # この場合はSG作成後に設定
+          # SourceSecurityGroupId: !Ref BastionWebserverSgTsStudyRecord
+        # WebServer → Backend API (ポート4000)
+        - IpProtocol: tcp
+          FromPort: 4000
+          ToPort: 4000
+          SourceSecurityGroupId: !Ref HttpHttpsSgTsStudyRecord
+
+  # 🔐 SSHアクセス手順
+  # 1. AWS マネジメントコンソール → EC2 → キーペア → 「キーペアを作成」
+  # 2. 例: ts-study-bastion-key という名前を作成
+  # 3. 作成時に .pem ファイルがローカルPCに自動的にダウンロードされる（再取得不可）
+  # 4. 下記テンプレートの "EC2 インスタンス作成時"に、そのキーペア名を `KeyName` に指定してSSH接続を行う
+
+  # bastion-webserver-sg-ts-study-record / Security Group for Bastion/WebServer
+  # SSH 接続専用（PEMファイルでローカルPCからアクセス）
+  BastionWebserverSgTsStudyRecord:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH access for Bastion/WebServer, outbound for SSH and PostgreSQL
+      VpcId: !Ref TsStudyRecordVPC
+      Tags:
+        - Key: Name
+          Value: bastion-webserver-sg-ts-study-record
+      # インバウンド
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  # PEMで接続するので全IPから可
+      # アウトバウンド
+      SecurityGroupEgress:
+        # SSH
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        # PostgreSQL
+        # psql や pgAdmin などで SQL を直接実行したいときや、バックアップやリストア作業、スキーマ変更など
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          DestinationSecurityGroupId: !Ref WebserverRdsSgTsStudyRecord
+
+# インスタンス:-----------------------------------------------------------------------------------
+  # Web Server
+  WebServerEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.small
+      ImageId: !Ref 'LatestAmiId'
+      SubnetId: !Ref PublicSubnet
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !Ref HttpHttpsSgTsStudyRecord
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          amazon-linux-extras install -y nginx1
+          systemctl enable nginx
+          systemctl start nginx
+          mkdir -p /home/ec2-user/ts-study-record-aws/frontend/dist
+          echo "<h1>Hello from Nginx WebServer</h1>" > /home/ec2-user/ts-study-record-aws/frontend/dist/index.html
+      Tags:
+        - Key: Name
+          Value: ec2-web-ts-study-record
+
+  # 🔐 SSHアクセス手順
+  # 1. AWS マネジメントコンソール → EC2 → キーペア → 「キーペアを作成」
+  # 2. 例: ts-study-bastion-key という名前を作成
+  # 3. 作成時に .pem ファイルがローカルPCに自動的にダウンロードされる（再取得不可）
+  # 4. 下記テンプレートの "EC2 インスタンス作成時"に、そのキーペア名を `KeyName` に指定してSSH接続を行う
+
+  # Bastion Host
+  # EC2 インスタンスは、Security Group が作成済みである必要あり
+  # Subnet（PublicSubnet）も作成済みである必要あり
+  BastionEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro  # インスタンスタイプ
+      ImageId: !Ref 'LatestAmiId'  # Amazon Linux 2023 の AMI をパラメータで指定
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref BastionWebserverSgTsStudyRecord  # SSH 専用 SG
+      KeyName: !Ref KeyPairName
+      Tags:
+        - Key: Name
+          Value: bastion-ec2-ts-study-record
+
+  # PostgreSQL 接続URL（Bastion 経由のローカルポートフォワーディング用）
+  # ssh -i ~/.ssh/yyy.pem -L 5432:<RDSエンドポイント>:5432 ec2-user@bastion.xxx.com
+  # 別ターミナルから localhost:5432 に接続してマイグレーション可能
+  DbTsStudyRecord:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: db-ts-study-record
+      AllocatedStorage: 20 # ストレージ容量（GB）
+      DBInstanceClass: db.t4g.micro
+      Engine: postgres
+      MasterUsername: admin
+      # MasterUserPassword は AWSマネジメントコンソールからSecrets Manager に記載し、参照する
+      MasterUserPassword: '{{resolve:secretsmanager:rds-master-password:SecretString:password}}'
+      VPCSecurityGroups:
+        - !Ref WebserverRdsSgTsStudyRecord
+      DBSubnetGroupName: !Ref RDSSubnetGroup
+      # MultiAZ: true の場合、スタンバイは自動で異なる AZ に配置される
+      # サブネットグループ（DBSubnetGroupName）で複数AZのサブネットを指定していれば、RDSが自動でAZを選択
+      MultiAZ: true
+      PubliclyAccessible: false
+      Port: 5432
+      # AvailabilityZone: ap-northeast-1c
+
+# Route53:-----------------------------------------------------------------------------------
+  # Route53 Hosted Zone
+  # 独自ドメイン用のパブリックホストゾーンを作成
+  MyHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: your-domain.com  # ← 実際のドメイン名に置き換え
+      HostedZoneConfig:
+        Comment: Hosted Zone for sample environment
+
+  # Aレコード（Address Record） 
+  # DNS（ドメインネームシステム）で「ドメイン名」を「IPv4アドレス」に対応付ける
+
+  # Aレコード（Webサーバー用）
+  WebServerARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: www.your-domain.com  # ← サブドメイン名に置き換え
+      Type: A
+      TTL: 300
+      ResourceRecords:
+        - !GetAtt WebServerEC2.PublicIp
+
+  # Aレコード（ルートドメイン用）
+  RootARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: your-domain.com  # ← 実際のドメイン名に置き換え
+      Type: A
+      TTL: 300
+      ResourceRecords:
+        - !GetAtt WebServerEC2.PublicIp
+
+  # Aレコード（Bastionサーバー用）
+  BastionARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: bastion.your-domain.com  # ← サブドメイン名に置き換え
+      Type: A
+      TTL: 300
+      ResourceRecords:
+        - !GetAtt BastionEC2.PublicIp
+
+  # CNAMEレコード (Canonical Name Record)
+  # 特定のドメイン名（例: db.home.example.com）を、
+  # RDSなどのデータベースのエンドポイント（例: db-xxxx.ap-northeast-1.rds.amazonaws.com）に紐付けるDNSレコード
+
+  # CNAMEレコード（DBエンドポイント用）
+  DBCnameRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: db.home.your-domain.com  # ← サブドメイン名に置き換え
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+        - !GetAtt DbTsStudyRecord.Endpoint.Address
+
+  # homeサブドメイン用のパブリックホストゾーン
+  HomeHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: home.your-domain.com  # ← 実際のサブドメインに置き換え
+      HostedZoneConfig:
+        Comment: Hosted Zone for home subdomain
+
+  # db.home用のCNAMEレコード
+  DbHomeCnameRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HomeHostedZone
+      Name: db.home.your-domain.com  # ← 実際のFQDNに置き換え
+      Type: CNAME
+      TTL: 300
+      ResourceRecords:
+        - db-xxxxxxx.ap-northeast-1.rds.amazonaws.com  # ← RDSのエンドポイントに置き換え
+
+# Outputs:-----------------------------------------------------------------------------------
+Outputs:
+  # WebサーバのパブリックIP
+  WebServerPublicIP:
+    Description: Public IP of WebServer
+    Value: !GetAtt WebServerEC2.PublicIp
+
+  # BastionのパブリックIP
+  BastionPublicIP:
+    Description: Public IP of Bastion Host
+    Value: !GetAtt BastionEC2.PublicIp
+
+  # RDSエンドポイント（接続用）
+  DbEndpoint:
+    Description: RDS endpoint address
+    Value: !GetAtt DbTsStudyRecord.Endpoint.Address
+
+  # RDSポート
+  DbPort:
+    Description: RDS port
+    Value: !GetAtt DbTsStudyRecord.Endpoint.Port
+
+  # Route53 Hosted Zone ID
+  HostedZoneID:
+    Description: Route53 Hosted Zone ID
+    Value: !Ref MyHostedZone
+
+  # Elastic IPを使う場合の出力例（必要に応じて）
+  # 本を見る限りElastic IPは使っていないようなのでコメントアウト
+  # WebServerElasticIP:
+  #   Description: Elastic IP of WebServer
+  #   Value: !Ref WebServerElasticIP
+
