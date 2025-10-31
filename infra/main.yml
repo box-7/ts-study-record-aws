@@ -7,7 +7,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation Template for VPC, Subnets, EC2 (Bastion + Web), RDS, Route53
 
 Parameters:
-# Type: String … 値は文字列
 # Default: 10.0.0.0/16 … デフォルト値は「10.0.0.0/16」
 # Description … このパラメータの説明（VPCのCIDRブロック）
   VpcCidr:
@@ -42,7 +41,6 @@ Resources:
 #   !Ref は「指定したリソース名またはパラメータ名を参照して、その値を取得する」ための関数
 #   EnableDnsSupport: true … DNS解決を有効化
 #   EnableDnsHostnames: true … DNSホスト名を有効化
-#   Name というタグに TsStudyRecordVPC という値を付ける
     Properties:
       CidrBlock: !Ref VpcCidr
       EnableDnsSupport: true
@@ -70,13 +68,12 @@ Resources:
 # Subnet:-----------------------------------------------------------------------------------
   # Public Subnet 1 (ap-northeast-1a)
 #  MapPublicIpOnLaunch: true
-# - EC2 起動時に自動でパブリックIPを割り当てる
-# - Public Subnet は true、Private Subnet は通常 false (NAT 経由)
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref TsStudyRecordVPC
       CidrBlock: !Ref PublicSubnetCidr
+      # インスタンスを起動するときに自動でパブリックIPを割り当てる
       MapPublicIpOnLaunch: true
       AvailabilityZone: ap-northeast-1a
       Tags:
@@ -91,7 +88,8 @@ Resources:
       VpcId: !Ref TsStudyRecordVPC
       CidrBlock: 10.0.64.0/20
       AvailabilityZone: ap-northeast-1a
-      MapPublicIpOnLaunch: false
+      # インスタンスを起動するときに自動でパブリックIPを割り当てる
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: private-ts-study-record-subnet
@@ -103,7 +101,8 @@ Resources:
       VpcId: !Ref TsStudyRecordVPC
       CidrBlock: 10.0.80.0/20
       AvailabilityZone: ap-northeast-1c
-      MapPublicIpOnLaunch: false
+      # インスタンスを起動するときに自動でパブリックIPを割り当てる
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
           Value: private02-ts-study-record-subnet
@@ -124,7 +123,7 @@ Resources:
 # Route Table:-----------------------------------------------------------------------------------
   # Public Route Table
   PublicRouteTable:
-  # VPC 内で使うルートテーブルを作成するためのリソース
+  # VPC 内で使うPublicルートテーブルを作成する
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref TsStudyRecordVPC
@@ -132,30 +131,25 @@ Resources:
         - Key: Name
           Value:  rt-public-ts-study-record
 
-  # Default route to IGW
-  # 10.0.0.0/16 → local は VPC 内通信用のデフォルトルート
-  # VPC を作成すると自動で作られるため、IaC で作る必要はなし
+  # Default Route to IGW
   PublicRoute:
     Type: AWS::EC2::Route
-    # DependsOn → 作成順序の制御
-    DependsOn: AttachIGW
+    DependsOn: AttachIGW # 作成順序の制御
     Properties:
-    # RouteTableId → PublicRouteTableにルートを設定する
-      RouteTableId: !Ref PublicRouteTable
+      RouteTableId: !Ref PublicRouteTable # PublicRouteTableにルートを設定
       # 「この宛先へのトラフィックはどこに送るか」を定義。主にアウトバウンド（VPC → インターネット）用
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref IGWTsStudyRecord
 
   # Public Subnet にルートテーブルを関連付け
   PublicSubnetRouteTableAssociation:
-  # 「サブネットにルートテーブルを紐付ける」リソース
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnet
       RouteTableId: !Ref PublicRouteTable
 
   # Private Route Table
-  # VPC 内のリソース間通信を管理するルートテーブル(必要に応じて NAT 経由でインターネットへのアクセスも管理)
+  #  VPC 内で使うPrivateルートテーブルを作成する(必要に応じて NAT 経由でインターネットへのアクセスも管理)
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -228,14 +222,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: 5432
           ToPort: 5432
-          # IPがまだ決まってない、または変更される可能性がある場合は
-          # GUI（コンソール）や手動であとから編集可能
-          # 一時的にCidrIpで許可し、後から手動で修正
+          # - IPが未確定または変更の可能性がある場合は、一時的に `CidrIp: 0.0.0.0/0` で全許可し、後から手動で修正する。
+          # - 固定IPが決まったら `CidrIp: <固定IP>/32` に変更する。
+          # - または、セキュリティグループ同士(BastionWebserverSgTsStudyRecord)でアクセス制御する方法もある（この場合はSG作成後に設定）。
           CidrIp: 0.0.0.0/0
-          # CidrIp: <Bastion固定IP>/32  # Bastionサーバの固定IP
-          # 固定IPじゃなくSG同士でアクセス制御することも可能
-          # この場合はSG作成後に設定
-          # SourceSecurityGroupId: !Ref BastionWebserverSgTsStudyRecord
         # WebServer → Backend API (ポート4000)
         - IpProtocol: tcp
           FromPort: 4000
